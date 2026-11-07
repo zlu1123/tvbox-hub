@@ -50,6 +50,18 @@ GitHub 备用地址：把域名路径换成 `https://cdn.jsdelivr.net/gh/zlu1123
 
 > 本机 `~/.ssh/config` 的 `Host *` 写死了 `IdentityFile ~/.ssh/id_rsa`，会把 Gitee 上登记的 `id_ed25519` 挤掉（默认连接报 Permission denied）。脚本已显式 `ssh -i ~/.ssh/id_ed25519`，不改全局配置。
 
+### Gitee 还没公开时的临时地址
+
+用 commit 固定的 jsDelivr 地址（分支解析缓存对 `@<commit-sha>` 无效，推完立刻生效）：
+
+```bash
+SHA=$(git rev-parse HEAD)
+echo "https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@${SHA}/config/live.txt"
+echo "https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@${SHA}/config/index.json"
+```
+
+缺点是每次更新都得换一串 SHA，所以 Gitee 配好之后就别用这个了。
+
 ---
 
 ## README 维护
