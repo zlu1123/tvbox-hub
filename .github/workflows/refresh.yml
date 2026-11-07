@@ -1,31 +1,34 @@
-name: 刷新源并发布
+name: 发布配置到 Pages
+
+# 这个 workflow 只做一件事：把仓库里已提交的 config/ 发布到 GitHub Pages。
+#
+# 为什么不在 CI 里刷新配置：
+# Actions 跑在境外机房，探活结果和你家宽带不一致。实测过一次：CI 给出 22 个台，
+# 其中 4 个（北京卫视、广东卫视、CCTV-5+、CCTV-6）在本机不通。
+# 所以刷新请在本地跑 ./scripts/refresh.sh，CI 只负责发布。
 
 on:
-  schedule:
-    # 每天 04:17（北京时间）跑一次。避开整点，GitHub 排队会快一点
-    - cron: "17 20 * * *"
-  workflow_dispatch:        # 也可以在 Actions 页面手动点一下
   push:
     branches: [main]
     paths:
-      - "config/sources.yaml"
-      - "scripts/**"
+      - "config/**"
       - ".github/workflows/refresh.yml"
+  workflow_dispatch:        # 需要重新发布时手动点一下
 
 permissions:
-  contents: write
   pages: write
   id-token: write
 
 concurrency:
-  group: tvbox-refresh
+  group: tvbox-pages
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  deploy:
     runs-on: ubuntu-latest
-    outputs:
-      changed: ${{ steps.commit.outputs.changed }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -33,42 +36,40 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: 安装依赖
-        run: pip install pyyaml
-
-      - name: 构建配置（抓取 + 探活 + 生成）
-        run: python3 scripts/build.py
-
-      - name: 配置体检
-        run: python3 scripts/check.py
-
-      - name: 提交结果
-        id: commit
-        if: github.event_name != 'push'
+      - name: 校验 index.json 结构
         run: |
-          git config user.name  "tvbox-bot"
-          git config user.email "tvbox-bot@users.noreply.github.com"
-          if [[ -n "$(git status --porcelain config/)" ]]; then
-            git add config/
-            git commit -m "chore: 自动刷新源 $(date -u '+%Y-%m-%d %H:%M UTC')"
-            git push
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "无变化，跳过提交"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
+          python3 - <<'PY'
+          import json, sys
+          d = json.load(open("config/index.json", encoding="utf-8"))
+          errs = []
+          for k in ("sites", "lives"):
+              if not isinstance(d.get(k), list):
+                  errs.append(f"顶层字段 {k} 缺失或不是数组")
+          for i, s in enumerate(d.get("sites", [])):
+              for rk in ("key", "name", "type", "api"):
+                  if rk not in s:
+                      errs.append(f"sites[{i}] 缺少 {rk}")
+              if s.get("type") not in (0, 1, 3, 4):
+                  errs.append(f"sites[{i}] type 非法: {s.get('type')}")
+          for g in d.get("lives", []):
+              if "group" not in g or not isinstance(g.get("channels"), list):
+                  errs.append("lives 分组结构错误")
+              for c in g.get("channels", []):
+                  if not c.get("name") or not c.get("urls"):
+                      errs.append(f"频道 {c.get('name','?')} 缺少 name 或 urls")
+          ch = sum(len(g.get("channels", [])) for g in d.get("lives", []))
+          if errs:
+              print("配置校验失败：")
+              for e in errs:
+                  print("  ✗", e)
+              sys.exit(1)
+          print(f"校验通过：{len(d.get('sites', []))} 个站点 / {ch} 个直播频道（v{d.get('version')}）")
+          PY
 
       - name: 打包站点产物
         uses: actions/upload-pages-artifact@v3
         with:
           path: config
 
-  deploy:
-    needs: refresh
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - id: deployment
         uses: actions/deploy-pages@v4

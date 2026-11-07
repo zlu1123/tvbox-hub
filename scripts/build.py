@@ -399,19 +399,31 @@ def main():
     index = build_index(cfg, lives, version)
 
     os.makedirs(OUT_DIR, exist_ok=True)
+
+    # index.json —— 直播 + 影视合在一起，大多数 TVBox 填这一个就够
     with open(idx_path, "w", encoding="utf-8") as f:
         json.dump(index, f, ensure_ascii=False, indent=2)
+
+    # live.json —— 纯直播源，单独填「直播源 / EPG 地址」用
+    live_only = dict(index, name=index["name"] + " - 直播", sites=[], lives=lives)
     with open(os.path.join(OUT_DIR, "live.json"), "w", encoding="utf-8") as f:
-        json.dump({"lives": lives}, f, ensure_ascii=False, indent=2)
+        json.dump(live_only, f, ensure_ascii=False, indent=2)
+
+    # vod.json —— 纯影视源，单独填「影视仓 / 点播接口」用
+    vod_only = dict(index, name=index["name"] + " - 影视", lives=[])
+    with open(os.path.join(OUT_DIR, "vod.json"), "w", encoding="utf-8") as f:
+        json.dump(vod_only, f, ensure_ascii=False, indent=2)
+
     with open(os.path.join(OUT_DIR, "health.json"), "w", encoding="utf-8") as f:
         json.dump(health, f, ensure_ascii=False, indent=2)
 
-    # 同步版本号回 sources.yaml，避免下次重算
     if verbose:
         n_sites = len(index["sites"])
         n_live = sum(len(g["channels"]) for g in lives)
-        print(color(f"✔ 完成：{n_sites} 个点播站 / {n_live} 个直播频道", "g"))
-        print(f"  → {os.path.relpath(idx_path, ROOT)}")
+        print(color(f"✔ 完成：{n_sites} 个影视站 / {n_live} 个直播频道", "g"))
+        print("  → config/index.json   （直播+影视，填这个最省事）")
+        print("  → config/live.json    （纯直播）")
+        print("  → config/vod.json     （纯影视）")
 
 
 if __name__ == "__main__":
