@@ -12,13 +12,15 @@ meta:
 # 发布地址（只影响 index.json 里 lives.url 指向哪里）
 # ------------------------------------------------------------
 publish:
-  # 电视拉直播清单的入口。用 jsDelivr 的 GitHub 源：证书是 GlobalSign，
-  # Android 6 的老电视认；无 302。
+  # 电视拉直播清单的入口。
   #
-  # 不要换成 https://gitee.com/.../raw/... ——Gitee 现在会 302 跳到
-  # raw.giteeusercontent.com，而这个域名 CNAME 到 *.baiduads.com，
-  # 部分电视 / 路由器 DNS 会把它当广告域名拦掉，表现就是一直 loading。
-  live_m3u: "https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.m3u"
+  # 这里必须用 Gitee 的实时地址，不能用 jsDelivr 的 @main：
+  # jsDelivr 对分支的解析缓存远不止 12 小时（实测还停在 v1.0.14，而当前已经
+  # v1.0.34），电视会拿到一份几十个版本前的直播清单，里面还混着广告线路。
+  # 只有 commit / tag 形式的 jsDelivr 地址能立即生效，但每次构建都会变，不现实。
+  #
+  # Gitee raw 会 302 到 raw.giteeusercontent.com，OkHttp 默认跟随，实测 200。
+  live_m3u: "https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.m3u"
 
 # ------------------------------------------------------------
 # 直播源

@@ -1,6 +1,6 @@
 {
   "name": "我的 TVBox 源 - 影视",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "sites": [
     {
       "key": "ffzy",
@@ -49,16 +49,6 @@
       "api": "https://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/",
       "searchable": 1,
       "quickSearch": 1,
-      "filterable": 1,
-      "ext": ""
-    },
-    {
-      "key": "modu",
-      "name": "魔都资源",
-      "type": 1,
-      "api": "https://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/",
-      "searchable": 1,
-      "quickSearch": 0,
       "filterable": 1,
       "ext": ""
     }

@@ -1,11 +1,11 @@
 {
   "name": "我的 TVBox 源 - 直播",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "sites": [],
   "lives": [
     {
       "name": "直播",
-      "url": "https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.m3u"
+      "url": "https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.m3u"
     }
   ],
   "parses": [],

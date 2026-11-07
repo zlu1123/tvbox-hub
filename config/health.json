@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-07T17:55:41+08:00",
+  "generated_at": "2026-11-07T18:01:00+08:00",
   "probed": true,
   "summary": {
     "channels_total": 79,
     "channels_alive": 38,
     "lines_total": 159,
-    "lines_alive": 43
+    "lines_alive": 44
   },
   "channels": [
     {
@@ -15,8 +15,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
-        "广告跳转"
+        "HTTP 404",
+        "RemoteDisconnected"
       ]
     },
     {
@@ -315,9 +315,8 @@
       "group": "卫视",
       "status": "partial",
       "lines_total": 3,
-      "lines_alive": 1,
+      "lines_alive": 2,
       "errors": [
-        "广告跳转",
         "非有效 m3u8"
       ]
     },
@@ -729,8 +728,7 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
-        "广告跳转"
+        "RemoteDisconnected"
       ]
     },
     {

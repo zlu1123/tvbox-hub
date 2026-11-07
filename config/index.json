@@ -1,6 +1,6 @@
 {
   "name": "我的 TVBox 源",
-  "version": "1.0.34",
+  "version": "1.0.35",
   "sites": [
     {
       "key": "ffzy",
@@ -51,22 +51,12 @@
       "quickSearch": 1,
       "filterable": 1,
       "ext": ""
-    },
-    {
-      "key": "modu",
-      "name": "魔都资源",
-      "type": 1,
-      "api": "https://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/",
-      "searchable": 1,
-      "quickSearch": 0,
-      "filterable": 1,
-      "ext": ""
     }
   ],
   "lives": [
     {
       "name": "直播",
-      "url": "https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.m3u"
+      "url": "https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.m3u"
     }
   ],
   "parses": [],
