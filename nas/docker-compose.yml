@@ -1,0 +1,27 @@
+# Emby → TVBox 转换代理，跑在你 NAS 上
+#
+# 用法：
+#   1. 改下面 EMBY_BASE / EMBY_API_KEY / EMBY_USER_ID
+#   2. docker compose up -d
+#   3. 浏览器打开 http://<NAS的IP>:8000/ 应该看到 {"ok": true, ...}
+
+services:
+  emby2cms:
+    image: python:3.12-slim
+    container_name: emby2cms
+    restart: unless-stopped
+    command: python -u /app/emby2cms.py --port 8000
+    volumes:
+      - ./emby2cms.py:/app/emby2cms.py:ro
+    environment:
+      # Emby 服务器地址（Jellyfin 也是这个格式，默认端口 8096）
+      EMBY_BASE: "http://192.168.1.10:8096"
+      # Emby 后台 → 设置 → 高级 → API 密钥 → 新建
+      EMBY_API_KEY: "在这里填你的 API Key"
+      # 建议填一个用户 ID，没有就留空（某些版本不填拿不到剧集列表）
+      EMBY_USER_ID: ""
+      # 索引缓存秒数，库很大可以调大到 900
+      CACHE_TTL: "300"
+      TZ: "Asia/Shanghai"
+    ports:
+      - "8000:8000"

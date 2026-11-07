@@ -1,0 +1,74 @@
+name: 刷新源并发布
+
+on:
+  schedule:
+    # 每天 04:17（北京时间）跑一次。避开整点，GitHub 排队会快一点
+    - cron: "17 20 * * *"
+  workflow_dispatch:        # 也可以在 Actions 页面手动点一下
+  push:
+    branches: [main]
+    paths:
+      - "config/sources.yaml"
+      - "scripts/**"
+      - ".github/workflows/refresh.yml"
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: tvbox-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 安装依赖
+        run: pip install pyyaml
+
+      - name: 构建配置（抓取 + 探活 + 生成）
+        run: python3 scripts/build.py
+
+      - name: 配置体检
+        run: python3 scripts/check.py
+
+      - name: 提交结果
+        id: commit
+        if: github.event_name != 'push'
+        run: |
+          git config user.name  "tvbox-bot"
+          git config user.email "tvbox-bot@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain config/)" ]]; then
+            git add config/
+            git commit -m "chore: 自动刷新源 $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "无变化，跳过提交"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 打包站点产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: config
+
+  deploy:
+    needs: refresh
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

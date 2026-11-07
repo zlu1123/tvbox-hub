@@ -1,0 +1,398 @@
+{
+  "generated_at": "2026-11-07T13:01:21+08:00",
+  "probed": true,
+  "summary": {
+    "channels_total": 42,
+    "channels_alive": 19,
+    "lines_total": 44,
+    "lines_alive": 19
+  },
+  "channels": [
+    {
+      "name": "中国教育一台",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "中国教育二台",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "东方卫视国际",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 404"
+      ]
+    },
+    {
+      "name": "云南卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "超时"
+      ]
+    },
+    {
+      "name": "北京卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "四川卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "天津卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "宁夏卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "安徽卫视",
+      "group": "卫视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "山东卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "广东卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "延边卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "新疆卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "江苏卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "江西卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "河北卫视",
+      "group": "卫视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "浙江卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "深圳卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "湖南卫视",
+      "group": "卫视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "西藏卫视",
+      "group": "卫视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "贵州卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "辽宁卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "青海卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "黑龙江卫视",
+      "group": "卫视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CCTV-1",
+      "group": "央视",
+      "status": "partial",
+      "lines_total": 2,
+      "lines_alive": 1,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CCTV-2",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-3",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-4K 超高清",
+      "group": "央视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CCTV-5+",
+      "group": "央视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "CCTV-6",
+      "group": "央视",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CCTV-7",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-8",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-8K 超高清",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-9",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-10",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-11",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-12",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-13",
+      "group": "央视",
+      "status": "partial",
+      "lines_total": 2,
+      "lines_alive": 1,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CCTV-14",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-15",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-16",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "CCTV-17",
+      "group": "央视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    }
+  ]
+}

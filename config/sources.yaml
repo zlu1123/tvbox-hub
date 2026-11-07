@@ -1,0 +1,178 @@
+# ============================================================
+#  TVBox 源 —— 唯一的配置入口
+#  改完这个文件，跑 `python3 scripts/build.py` 就会重新生成配置
+# ============================================================
+
+meta:
+  name: "我的 TVBox 源"
+  # 生成物版本号，每次 build 会自动 +1 并写入 index.json
+  version: "1.0.0"
+
+# ------------------------------------------------------------
+# 直播源
+# ------------------------------------------------------------
+live:
+  enabled: true
+
+  # 上游 M3U / TXT 清单，按顺序抓取合并。
+  # 想加自己的源，直接在下面追加一条即可（支持 m3u / m3u8 / txt: "频道名,url" 两种格式）。
+  upstreams:
+    - name: iptv-org-cn
+      url: "https://iptv-org.github.io/iptv/countries/cn.m3u"
+
+    # 你自己的源（比如运营商 IPTV 抓包得到的 m3u、或你自己维护的 txt 清单）。
+    # trust: true 表示跳过上面的 include/exclude 白名单，里面有什么就收什么。
+    # 把这些文件放进 config/ 目录，用相对路径引用即可。
+    # - name: my-own
+    #   url: "https://raw.githubusercontent.com/<你>/tvbox-hub/main/config/my_live.m3u"
+    #   trust: true
+
+  # 只保留频道名命中这些正则的条目（不区分大小写）
+  # 注意：这里匹配的是「映射成中文之后」的名字，所以下面的 name_map 是前提
+  include:
+    - "^CCTV-\\d+"
+    - "卫视"
+    - "^CGTN|^CETV"
+
+  # 命中以下正则的条目直接丢弃
+  exclude:
+    - "Not 24/7"
+    - "Geo-blocked"
+    - "购物|Shopping|HomePlus"
+    - "CCTV\\+\\s?\\d"      # CCTV+ 是海外商业频道，不是央视
+
+  # ----------------------------------------------------------
+  # 英文台名 → 中文台名
+  # iptv-org 上游用的是英文名，不映射的话「卫视」这种规则永远匹配不上。
+  # 想加地方台，在这里加一行，再把台名对应的关键词加进 include 即可。
+  # ----------------------------------------------------------
+  name_map:
+    # —— 央视付费/特色频道 ——
+    "CCTV-Billiards": "央视台球"
+    "CCTV-Golf & Tennis": "央视高尔夫网球"
+    "CCTV-Storm Music": "风云音乐"
+    "CCTV-Storm Theater": "风云剧场"
+    "CCTV-Storm Football": "风云足球"
+    "CCTV-The First Theater": "第一剧场"
+    "CCTV-Nostalgia Theater": "怀旧剧场"
+    "CCTV-Weapon & Technology": "央视兵器科技"
+    "CCTV-Women's Fashion": "央视女性时尚"
+    "CCTV-World Geography": "央视世界地理"
+    "CCTV-Culture of Quality": "央视精品"
+    "CCTV-Health": "央视卫生健康"
+    "CCTV-4K": "CCTV-4K 超高清"
+    "CCTV-8K": "CCTV-8K 超高清"
+    # —— 教育台 ——
+    "CETV-1": "中国教育一台"
+    "CETV-2": "中国教育二台"
+    # —— 省级卫视 ——
+    "Anhui TV": "安徽卫视"
+    "Beijing Satellite TV": "北京卫视"
+    "Bingtuan Satellite TV": "兵团卫视"
+    "Dragon TV International": "东方卫视国际"
+    "Guangdong Satellite TV": "广东卫视"
+    "Guizhou TV": "贵州卫视"
+    "Hebei TV": "河北卫视"
+    "Heilongjiang TV": "黑龙江卫视"
+    "Hunan TV": "湖南卫视"
+    "Jiangsu Satellite TV": "江苏卫视"
+    "Jiangxi TV": "江西卫视"
+    "Liaoning TV": "辽宁卫视"
+    "Nei Monggol TV": "内蒙古卫视"
+    "Ningxia Satellite Channel": "宁夏卫视"
+    "Qinghai TV": "青海卫视"
+    "Shandong Satellite TV": "山东卫视"
+    "Shenzhen Satellite TV": "深圳卫视"
+    "Sichuan Satellite TV": "四川卫视"
+    "Tianjin TV": "天津卫视"
+    "Xinjiang TV 1": "新疆卫视"
+    "Xizang TV Chinese": "西藏卫视"
+    "Yanbian Satellite TV": "延边卫视"
+    "Yunnan Satellite TV": "云南卫视"
+    "Zhejiang Satellite TV": "浙江卫视"
+
+  # 频道名清洗后作为唯一键，同一频道多个地址会合并成多线路（TVBox 自动容错切换）
+  max_lines_per_channel: 4
+
+  # 探活：真正去拉一遍 m3u8，死链直接不写进配置
+  probe:
+    enabled: true
+    timeout: 8            # 单个流超时（秒）
+    workers: 24           # 并发数
+    # 连续 2 次探活失败才判定为死链，避免误杀
+    retries: 2
+
+# ------------------------------------------------------------
+# 点播站点
+# ------------------------------------------------------------
+vod:
+  sites:
+    # ===== 自建 NAS 影库（由 nas/emby2cms.py 提供苹果CMS v10 接口）=====
+    # 地址里的 192.168.1.10 换成你 NAS 的实际内网 IP，端口换成你映射的端口
+    - key: "nas_lib"
+      name: "我的影库"
+      type: 4
+      api: "http://192.168.1.10:8000/api.php/provide/vod/"
+      searchable: 1
+      quickSearch: 1
+      filterable: 1
+      ext: ""
+
+    # ===== 下面是留给你自己加站点的位置（示例已注释）=====
+    # 苹果CMS v10 类型的站点：
+    # - key: "example_cms"
+    #   name: "示例站"
+    #   type: 4
+    #   api: "https://example.com/api.php/provide/vod/"
+    #   searchable: 1
+    #   quickSearch: 0
+    #   filterable: 1
+
+# ------------------------------------------------------------
+# 播放器高级项（一般不用动）
+# ------------------------------------------------------------
+player:
+  # 解析器：留空表示不启用网页解析
+  parses: []
+
+  # 支持的 flag，决定播放器用哪套播放核心
+  flags:
+    - youku
+    - qq
+    - iqiyi
+    - qiyi
+    - letv
+    - sohu
+    - tudou
+    - pptv
+    - mgtv
+    - wasu
+    - bilibili
+
+  # 硬解码优先的 ijk 选项组
+  ijk:
+    - group: "软解码"
+      options:
+        - category: 4
+          name: "opensles"
+          value: "0"
+        - category: 4
+          name: "framedrop"
+          value: "1"
+    - group: "硬解码"
+      options:
+        - category: 4
+          name: "mediacodec"
+          value: "1"
+        - category: 4
+          name: "framedrop"
+          value: "1"
+
+  # DNS over HTTPS，防止运营商 DNS 污染导致源打不开
+  doh:
+    - name: "Google"
+      url: "https://dns.google/dns-query"
+      ips: ["8.8.4.4", "8.8.8.8"]
+    - name: "AliDNS"
+      url: "https://dns.alidns.com/dns-query"
+      ips: ["223.5.5.5", "223.6.6.6"]
