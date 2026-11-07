@@ -1,6 +1,6 @@
 {
   "name": "我的 TVBox 源 - 直播",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "wallpaper": "",
   "spider": "",
   "sites": [],
@@ -255,6 +255,13 @@
             "http://38.75.136.137:98/gslb/dsdqpub/gfjs.m3u8?auth=testpub"
           ],
           "logo": "https://i.imgur.com/QlF96eS.png"
+        },
+        {
+          "name": "央视卫生健康",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/wsjk.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/AzpRtCz.png"
         },
         {
           "name": "央视台球",

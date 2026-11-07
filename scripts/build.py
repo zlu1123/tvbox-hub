@@ -477,13 +477,31 @@ def main():
     with open(os.path.join(OUT_DIR, "health.json"), "w", encoding="utf-8") as f:
         json.dump(health, f, ensure_ascii=False, indent=2)
 
+    # 纯文本 / m3u 直播清单 —— 给「直播源」输入框那种只认 txt / m3u 的地方用。
+    # 每个频道只写第一条验证过的线路，避免同名多行在电视上显示成两个台。
+    txt_lines, m3u_lines = [], ["#EXTM3U"]
+    for g in lives:
+        txt_lines.append(f"{g['group']},#genre#")
+        for c in g["channels"]:
+            url = c["urls"][0]
+            txt_lines.append(f"{c['name']},{url}")
+            m3u_lines.append(
+                f'#EXTINF:-1 tvg-name="{c["name"]}" group-title="{g["group"]}",{c["name"]}'
+            )
+            m3u_lines.append(url)
+    with open(os.path.join(OUT_DIR, "live.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(txt_lines) + "\n")
+    with open(os.path.join(OUT_DIR, "live.m3u"), "w", encoding="utf-8") as f:
+        f.write("\n".join(m3u_lines) + "\n")
+
     if verbose:
         n_sites = len(index["sites"])
         n_live = sum(len(g["channels"]) for g in lives)
         print(color(f"✔ 完成：{n_sites} 个影视站 / {n_live} 个直播频道", "g"))
-        print("  → config/index.json   （直播+影视，填这个最省事）")
-        print("  → config/live.json    （纯直播）")
-        print("  → config/vod.json     （纯影视）")
+        print("  → config/index.json   （接口框：直播+影视）")
+        print("  → config/live.txt     （直播源框：txt 格式）")
+        print("  → config/live.m3u     （直播源框：m3u 格式）")
+        print("  → config/vod.json     （接口框：纯影视）")
 
 
 if __name__ == "__main__":

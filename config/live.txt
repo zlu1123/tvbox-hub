@@ -1,0 +1,55 @@
+央视,#genre#
+CCTV-1,http://74.91.26.218:82/live/cctv1hd.m3u8
+CCTV-2,http://74.91.26.218:82/live/cctv2hd.m3u8
+CCTV-3,http://74.91.26.218:82/live/cctv3hd.m3u8
+CCTV-7,http://74.91.26.218:82/live/cctv7hd.m3u8
+CCTV-8,http://74.91.26.218:82/live/cctv8hd.m3u8
+CCTV-8K 超高清,http://192.151.150.154/live/cctv8k.m3u8
+CCTV-9,https://xykt-fix.github.io/Y77.m3u8
+CCTV-10,http://74.91.26.218:82/live/cctv10hd.m3u8
+CCTV-11,http://74.91.26.218:82/live/cctv11hd.m3u8
+CCTV-12,http://74.91.26.218:82/live/cctv12hd.m3u8
+CCTV-13,http://74.91.26.218:82/live/cctv13hd.m3u8
+CCTV-14,http://74.91.26.218:82/live/cctv14hd.m3u8
+CCTV-15,http://74.91.26.218:82/live/cctv15hd.m3u8
+CCTV-16,http://74.91.26.218:82/live/cctv16hd.m3u8
+CCTV-17,http://74.91.26.218:82/live/cctv17hd.m3u8
+卫视,#genre#
+内蒙古卫视,https://cdn4.skygo.mn/live/disk1/NeigMGL/HLSv3-FTA/NeigMGL.m3u8
+安徽卫视,https://restream.pdtvhd.com/memfs/c1cd2ed0-3b2b-4c25-af98-a7fb0b1eb130.m3u8
+康巴卫视,http://110.185.237.164:8888/hls/30/index.m3u8
+河北卫视,https://event.pull.hebtv.com/live/live101.m3u8
+湖南卫视,http://hlsal-ldvt.qing.mgtv.com/nn_live/nn_x64/dWlwPTEyNy4wLjAuMSZ1aWQ9cWluZy1jbXMmbm5fdGltZXpvbmU9OCZjZG5leF9pZD1hbF9obHNfbGR2dCZ1dWlkPTliODY4NmU5ZTM2YzYwMmMmZT02OTE0NjA0JnY9MSZpZD1ITldTWkdTVCZzPTcwN2RiYTc2YzJjNmJmMTQ4MmUyZGYzOWU2NWM3YWFi/HNWSZGST.m3u8
+西藏卫视,https://pili-live-hls-zdzz-tv.zzxwcm.cn/zdzz-tv/nqzh.m3u8
+西藏卫视藏语,https://live.vtibet.cn/live/ZYWS20261016.stream.m3u8
+其他,#genre#
+QTV-2,http://video10.qtv.com.cn/drm/qtv2at/manifest.m3u8
+QTV-5,http://video10.qtv.com.cn/drm/qtv5at/manifest.m3u8
+Siping TV,http://stream2.jlntv.cn/sptv/sd/live.m3u8?_upt=f27750421743154598
+Xinjiang TV 2,http://110.153.180.106:55555/out_3/index.m3u8
+Xinjiang TV 3,http://110.153.180.106:55555/out_2/index.m3u8
+Xinjiang TV 8,http://120.70.60.179:9901/tsfile/live/1002_1.m3u8?authid=0&key=txiptv&playlive=1
+东莞综合新闻频道,http://stream.sun0769.com/dgrtv1/mp4tv1_1500.flv
+兰州文旅频道,https://liveplus.lzr.com.cn/wlpd/HD/live.m3u8
+兰州新闻综合频道,https://liveplus.lzr.com.cn/xwzh/HD/live.m3u8
+哈尔滨新闻综合频道,https://stream.hrbtv.net/xwzh/playlist.m3u8?_upt=ef41dd531755913594
+哈尔滨电影频道,https://stream.hrbtv.net/yspd/playlist.m3u8
+央视兵器科技,http://38.75.136.137:98/gslb/dsdqpub/gfjs.m3u8?auth=testpub
+央视卫生健康,http://38.75.136.137:98/gslb/dsdqpub/wsjk.m3u8?auth=testpub
+央视台球,http://38.75.136.137:98/gslb/dsdqpub/ystq.m3u8?auth=testpub
+央视女性时尚,http://38.75.136.137:98/gslb/dsdqpub/nxss.m3u8?auth=testpub
+央视高尔夫网球,http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub
+宜昌三峡旅游生活,https://liveplay.ycrmt.cn/sxgd/lysh.m3u8
+宜昌三峡综合频道,https://liveplay.ycrmt.cn/sxgd/zhpd.m3u8
+广州台,https://tencentplaybusiness.gztv.com/live/zonghes.m3u8
+广西综艺旅游频道,http://111.59.24.227:8181/tsfile/live/1001_1.m3u8?authid=0&key=txiptv&playlive=1
+怀旧剧场,http://38.75.136.137:98/gslb/dsdqpub/hjjc.m3u8?auth=testpub
+浙江国际频道,https://ali-m-l.cztv.com/channels/lantian/channel10/1080p.m3u8
+湖南经视频道,https://p8.vzan.com/slowlive/415983998730568937/live.m3u8
+潮州公共频道,http://113.64.146.48:1688/hls/4/index.m3u8
+第一剧场,http://38.75.136.137:98/gslb/dsdqpub/dyjc.m3u8?auth=testpub
+荆门综合新闻频道,https://stream.jmtv.com.cn/xwzh/sd/live.m3u8?_upt=341f4b8e1791883036
+赤峰综合新闻频道,http://play1-qk.nmtv.cn/live/1735546697341033.m3u8
+风云剧场,http://38.75.136.137:98/gslb/dsdqpub/fyjc.m3u8?auth=testpub
+风云足球,http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub
+风云音乐,http://38.75.136.137:98/gslb/dsdqpub/fyyy.m3u8?auth=testpub

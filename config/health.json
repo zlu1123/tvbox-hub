@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-07T14:24:30+08:00",
+  "generated_at": "2026-11-07T14:36:13+08:00",
   "probed": true,
   "summary": {
     "channels_total": 121,
-    "channels_alive": 51,
+    "channels_alive": 52,
     "lines_total": 123,
-    "lines_alive": 51
+    "lines_alive": 52
   },
   "channels": [
     {
@@ -577,12 +577,10 @@
     {
       "name": "央视卫生健康",
       "group": "其他",
-      "status": "dead",
+      "status": "ok",
       "lines_total": 1,
-      "lines_alive": 0,
-      "errors": [
-        "RemoteDisconnected"
-      ]
+      "lines_alive": 1,
+      "errors": []
     },
     {
       "name": "央视台球",
