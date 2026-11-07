@@ -180,21 +180,105 @@ live:
 # ------------------------------------------------------------
 # 影视源（点播）—— TVBox / 影视仓 里搜电影电视剧用的就是这里
 #
-# 只认一种格式：能返回「苹果CMS v10」JSON 的接口地址。
-# 现在是空的，所以电视上只有直播、没有点播。
+# 只收「苹果CMS V10」的 JSON 采集接口，site.type 必须是 1：
+#   · type=1 → JSON 接口（api.php/provide/vod/，不带 at/xml）
+#   · type=0 → 老式 XML 接口（要带 /at/xml/），别和 1 混用
+#   · type=3 → 需要 spider jar 的爬虫源，这里一律不用（远程 jar 有风险）
+#   （实测过公开配置：231 个 provide/vod 站点用 type=1，只有 12 个用 type=0）
+#
+# api 末尾的 /from/<播放源名>/ 是苹果CMS 的「只返回这一种线路」写法。
+# 不加它，接口会把网页解析线路（/share/ 那种要跳转、常插广告）和 m3u8
+# 直链混着返回，电视上第一条往往就是打不开的网页线路。加了以后实测
+# 六个站全部只返回纯 m3u8 直链。
+#
+# 这里是「候选池」不是最终清单：每次构建都会逐个实测
+# （列表 → 详情播放地址 → 关键词搜索），挂掉的自动不写进 index.json，
+# 不用手改。体检报告在 config/vod-health.json。
+#
+# 顺序 = 电视上显示的顺序 = 推荐优先级。前两个是「接口走 http +
+# 播放域名 Certum 链」，你这台 Android 6 电视（无 ISRG Root X1）完整兼容。
 # ------------------------------------------------------------
 vod:
-  sites: []
+  sites:
+    - key: "ffzy"
+      name: "非凡资源"
+      type: 1
+      api: "http://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/"
+      searchable: 1
+      quickSearch: 1
+      filterable: 1
+      ext: ""
+      _note: "http 接口 + Certum 播放域名，约 9.9 万条，响应 0.4s"
 
-  # ===== 加一个影视接口：照抄下面这段，取消注释，改 api 就行 =====
+    - key: "dytt"
+      name: "电影天堂"
+      type: 1
+      api: "http://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/"
+      searchable: 1
+      quickSearch: 1
+      filterable: 1
+      ext: ""
+      _note: "http 接口 + Certum 播放域名，约 8.5 万条，响应 0.4s"
+
+    - key: "360zy"
+      name: "360资源"
+      type: 1
+      api: "https://360zy.com/api.php/provide/vod/from/360zy/"
+      searchable: 1
+      quickSearch: 1
+      filterable: 1
+      ext: ""
+      _note: "播放域名是 Certum 链；接口是 Let's Encrypt，靠 App 自带 SSL 工厂"
+
+    - key: "lziapi"
+      name: "量子资源"
+      type: 1
+      api: "http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/"
+      searchable: 1
+      quickSearch: 1
+      filterable: 1
+      ext: ""
+      _note: "片库最大之一（约 16.3 万条），响应 0.3s；播放域名是 Let's Encrypt"
+
+    - key: "bfzy"
+      name: "暴风资源"
+      type: 1
+      api: "http://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/"
+      searchable: 1
+      quickSearch: 1
+      filterable: 1
+      ext: ""
+      _note: "片库最大（约 17.1 万条）；已用 http 绕开接口的 LE 证书"
+
+    - key: "modu"
+      name: "魔都资源"
+      type: 1
+      api: "http://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/"
+      searchable: 1
+      quickSearch: 0          # 实测 8.6s，不放进全局快捷搜索拖慢聚合
+      filterable: 1
+      ext: ""
+      _note: "响应最慢，只保留手动浏览/单独搜索"
+
+  # 影视站探活。比直播探活严格：光接口能打开不算，还要能拿详情、
+  # 能拿到 m3u8 播放地址、能搜到片子，三项全过才写进电视配置。
+  probe:
+    enabled: true
+    timeout: 12             # 单个请求超时（秒）
+    workers: 6
+    keyword: "流浪地球"     # 用它验证搜索，换成你想测的片名也行
+    require_search: true    # 搜索无结果就判死（防止只返回首页的假接口）
+
+  # ===== 想加自己的接口：照抄下面这段，改 api 就行 =====
+  #   _note 这种下划线开头的字段只给自己看，不会写进电视配置。
   #
   # - key: "my_vod"                  # 随便起，不能和别的重复
-  #   name: "影视"                    # 电视上显示的名字
-  #   type: 4                        # 固定 4 = 标准苹果CMS接口
+  #   name: "我的影视"
+  #   type: 1
   #   api: "https://xxx.com/api.php/provide/vod/"
-  #   searchable: 1                  # 允许搜索
-  #   quickSearch: 1                 # 参与首页快捷搜索
-  #   filterable: 1                  # 允许按分类筛选
+  #   searchable: 1
+  #   quickSearch: 1
+  #   filterable: 1
   #   ext: ""
   #
   # 加完跑一次 ./scripts/refresh.sh，电视上刷新配置就能搜片了。

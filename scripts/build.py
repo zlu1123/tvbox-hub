@@ -26,6 +26,7 @@ import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
+from urllib.parse import urlencode
 
 try:
     import yaml
@@ -485,15 +486,169 @@ def collect_live(cfg, do_probe=True, verbose=True):
     return lives, health
 
 
-def build_index(cfg, lives, version):
+# --------------------------------------------------------------------------
+# 影视源探活
+#
+# 免费采集站的寿命比直播流还短，光「接口能打开」完全不够：
+# 有些站首页能返回 JSON，但详情没有播放地址，或者搜索永远空。
+# 所以三项全过才写进电视配置：列片 → 详情有 m3u8 → 搜索有结果。
+# --------------------------------------------------------------------------
+def _cms_url(api, params):
+    sep = "&" if "?" in api else "?"
+    return api + sep + urlencode(params)
+
+
+def _cms_json(url, timeout):
+    req = urllib.request.Request(
+        url, headers={"User-Agent": UA, "Accept": "application/json,*/*"})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        raw = r.read(4_000_000)
+    text = raw.decode("utf-8", "ignore").lstrip("\ufeff").strip()
+    return json.loads(text)
+
+
+def probe_vod_one(site, timeout=12, keyword="流浪地球", require_search=True):
+    api = str(site.get("api", ""))
+    r = {
+        "key": site.get("key"), "name": site.get("name"), "api": api,
+        "status": "dead", "error": "",
+        "total": 0, "classes": 0, "search_hits": 0, "list_ms": 0,
+        "play_host": "", "play_is_m3u8": False,
+    }
+    try:
+        # 1) 列片（个别站只认老参数 ac=videolist，给一次回退）
+        t0 = time.time()
+        try:
+            d = _cms_json(_cms_url(api, {"ac": "list", "pg": 1}), timeout)
+        except Exception:  # noqa: BLE001
+            d = _cms_json(_cms_url(api, {"ac": "videolist", "pg": 1}), timeout)
+        r["list_ms"] = int((time.time() - t0) * 1000)
+        lst = d.get("list") or []
+        if not isinstance(lst, list) or not lst:
+            r["error"] = f"列表为空（code={d.get('code')} msg={str(d.get('msg'))[:40]}）"
+            return r
+        r["total"] = int(d.get("total") or 0)
+        r["classes"] = len(d.get("class") or [])
+
+        # 2) 详情必须给得出 m3u8 直链，避免配一个只能看不能播的空壳
+        vid = lst[0].get("vod_id")
+        if not vid:
+            r["error"] = "列表里没有 vod_id"
+            return r
+        dd = _cms_json(_cms_url(api, {"ac": "detail", "ids": vid}), timeout)
+        dl = dd.get("list") or []
+        pu = str((dl[0] if dl else {}).get("vod_play_url", ""))
+        if not pu:
+            r["error"] = "详情里没有播放地址"
+            return r
+        r["play_is_m3u8"] = ".m3u8" in pu.lower()
+        hosts = re.findall(r"https?://([^/:$\s#]+)", pu)
+        r["play_host"] = hosts[0] if hosts else ""
+        if not r["play_is_m3u8"]:
+            r["error"] = "播放地址不是 m3u8 直链"
+            return r
+
+        # 3) 搜索（用户要的就是能搜片，这步不能省）
+        if require_search:
+            s = _cms_json(_cms_url(api, {"ac": "list", "wd": keyword}), timeout)
+            r["search_hits"] = len(s.get("list") or [])
+            if r["search_hits"] == 0:
+                r["error"] = f"搜索「{keyword}」无结果"
+                return r
+
+        r["status"] = "ok"
+    except urllib.error.HTTPError as e:
+        r["error"] = f"HTTP {e.code}"
+    except urllib.error.URLError as e:
+        r["error"] = f"连不上（{str(e.reason)[:40]}）"
+    except (socket.timeout, TimeoutError):
+        r["error"] = "超时"
+    except ValueError:
+        r["error"] = "返回非 JSON"
+    except Exception as e:  # noqa: BLE001
+        r["error"] = type(e).__name__
+    return r
+
+
+def collect_vod(cfg, do_probe=True, verbose=True):
+    """按候选池逐个实测，只返回活着的站点。
+    下划线开头的字段（_note 等）只是给人看的备注，不写进电视配置。
+    """
     vod = cfg.get("vod", {})
+    candidates = vod.get("sites", []) or []
+    pc = vod.get("probe", {})
+    timeout = int(pc.get("timeout", 12))
+    workers = max(1, int(pc.get("workers", 6)))
+    keyword = str(pc.get("keyword", "流浪地球"))
+    require_search = bool(pc.get("require_search", True))
+    do_probe = do_probe and bool(pc.get("enabled", True))
+
+    if not do_probe or not candidates:
+        results = [{"key": x.get("key"), "name": x.get("name"),
+                    "api": x.get("api"), "status": "unprobed", "error": "未探活"}
+                   for x in candidates]
+    else:
+        if verbose:
+            print(color(f"  影视站探活中… 共 {len(candidates)} 个", "d"))
+
+        def run_batch(idxs):
+            out = {}
+            with ThreadPoolExecutor(max_workers=workers) as pool:
+                futs = {
+                    pool.submit(probe_vod_one, candidates[i], timeout,
+                                keyword, require_search): i
+                    for i in idxs
+                }
+                for f in as_completed(futs):
+                    out[futs[f]] = f.result()
+            return out
+
+        first = run_batch(range(len(candidates)))
+        # 免费采集站抖动很大，单次 RemoteDisconnected 多半是偶发。
+        # 失败的重测一次，过了就恢复，别让接口列表在两次构建之间来回跳。
+        retry = [i for i, r in first.items() if r.get("status") != "ok"]
+        if retry:
+            time.sleep(0.6)
+            for i, r in run_batch(retry).items():
+                if r.get("status") == "ok":
+                    first[i] = r
+        results = [first[i] for i in range(len(candidates))]
+
+        if verbose:
+            for rr in results:
+                mark = "OK" if rr["status"] == "ok" else "NO"
+                detail = (f"{rr['total']} 条 / 搜索 {rr['search_hits']} "
+                          f"/ {rr['list_ms']}ms / {rr['play_host']}")
+                print(f"  · [{mark}] {rr['name']}: {rr['error'] or detail}")
+
+    sites = []
+    for s, r in zip(candidates, results):
+        if r.get("status") in ("ok", "unprobed"):
+            sites.append({k: v for k, v in s.items() if not k.startswith("_")})
+
+    health = {
+        "generated_at": datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds"),
+        "probed": bool(do_probe),
+        "keyword": keyword,
+        "summary": {
+            "sites_total": len(candidates),
+            "sites_alive": len(sites),
+        },
+        "sites": results,
+    }
+    if verbose:
+        print(color(f"  影视：{len(sites)}/{len(candidates)} 个接口可用", "g"))
+    return sites, health
+
+
+def build_index(cfg, lives, version, sites=None):
     player = cfg.get("player", {})
     idx = {
         "name": cfg.get("meta", {}).get("name", "TVBox 源"),
         "version": version,
         "wallpaper": "",
         "spider": "",
-        "sites": vod.get("sites", []),
+        "sites": sites if sites is not None else cfg.get("vod", {}).get("sites", []),
         "lives": lives,
         "parses": player.get("parses", []),
         "flags": player.get("flags", []),
@@ -541,8 +696,9 @@ def main():
     if verbose:
         print(color("· 抓取上游清单", "d"))
     lives, health = collect_live(cfg, do_probe=not args.no_probe, verbose=verbose)
+    sites, vod_health = collect_vod(cfg, do_probe=not args.no_probe, verbose=verbose)
 
-    index = build_index(cfg, lives, version)
+    index = build_index(cfg, lives, version, sites)
 
     os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -562,6 +718,9 @@ def main():
 
     with open(os.path.join(OUT_DIR, "health.json"), "w", encoding="utf-8") as f:
         json.dump(health, f, ensure_ascii=False, indent=2)
+
+    with open(os.path.join(OUT_DIR, "vod-health.json"), "w", encoding="utf-8") as f:
+        json.dump(vod_health, f, ensure_ascii=False, indent=2)
 
     # 纯文本 / m3u 直播清单 —— 给「直播源」输入框那种只认 txt / m3u 的地方用。
     # 每个频道只写第一条验证过的线路，避免同名多行在电视上显示成两个台。
@@ -588,6 +747,7 @@ def main():
         print("  → config/live.txt     （直播源框：txt 格式）")
         print("  → config/live.m3u     （直播源框：m3u 格式）")
         print("  → config/vod.json     （接口框：纯影视）")
+        print("  → config/vod-health.json（影视站探活报告）")
 
 
 if __name__ == "__main__":

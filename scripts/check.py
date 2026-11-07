@@ -3,10 +3,11 @@
 """
 check.py —— 配置体检
 
-做三件事：
+做四件事：
   1. 结构校验：index.json 是否符合 TVBox 能解析的结构
-  2. 站点连通：每个点播站 api 是否返回合法 CMS JSON
-  3. 直播统计：读取 health.json 给出可用率
+  2. 影视站探活：读 vod-health.json（build.py 的实测结果，这里不重复联网）
+  3. 直播可用率：读 health.json
+  4. 产物一致性：index / vod / live / txt / m3u 之间的版本与内容是否对齐
 
 退出码 0 = 通过，1 = 有致命错误（CI 里会拦住合并）
 """
@@ -14,14 +15,15 @@ check.py —— 配置体检
 import json
 import os
 import sys
-import urllib.request
 from urllib.parse import urlparse
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INDEX = os.path.join(ROOT, "config", "index.json")
-HEALTH = os.path.join(ROOT, "config", "health.json")
-UA = "okhttp/3.12.0"
+CONFIG = os.path.join(ROOT, "config")
+INDEX = os.path.join(CONFIG, "index.json")
+HEALTH = os.path.join(CONFIG, "health.json")
+VOD_HEALTH = os.path.join(CONFIG, "vod-health.json")
 
+# TVBox 的 site.type：0=XML(at/xml) 1=JSON(苹果CMS) 3=spider(jar) 4=部分分支的扩展
 VALID_SITE_TYPES = {0, 1, 3, 4}
 REQUIRED_SITE_KEYS = ("key", "name", "type", "api")
 
@@ -56,7 +58,7 @@ def is_private(host):
 
 
 def check_structure(idx):
-    print("\n[1/3] 结构校验")
+    print("\n[1/4] 结构校验")
     for k in ("sites", "lives"):
         if k not in idx:
             err(f"缺少顶层字段 {k}")
@@ -70,24 +72,32 @@ def check_structure(idx):
         for rk in REQUIRED_SITE_KEYS:
             if rk not in s:
                 err(f"{tag} 缺少字段 {rk}")
-        if s.get("type") not in VALID_SITE_TYPES:
-            err(f"{tag} type={s.get('type')} 非法（只允许 0/1/3/4）")
+        typ = s.get("type")
+        if typ not in VALID_SITE_TYPES:
+            err(f"{tag} type={typ} 非法（只允许 0/1/3/4）")
         if s.get("key") in seen_keys:
             err(f"{tag} key 重复：{s.get('key')}")
         seen_keys.add(s.get("key"))
+
         api = str(s.get("api", ""))
-        if s.get("type") == 4:
+        if typ in (0, 1, 4) and api:
             if not api.startswith(("http://", "https://")):
-                err(f"{tag} type=4 的 api 必须是 http(s) 地址")
+                err(f"{tag} api 必须是 http(s) 地址")
             elif is_private(urlparse(api).hostname):
-                warn(f"{tag} 「{s.get('name')}」指向内网地址 {urlparse(api).hostname}，"
-                     f"只有同一局域网内可用")
-        if s.get("type") == 0 and not idx.get("spider"):
-            warn(f"{tag} type=0 需要顶层 spider 字段，当前为空")
+                warn(f"{tag} 「{s.get('name')}」指向内网地址 "
+                     f"{urlparse(api).hostname}，只有同一局域网内可用")
+        if typ == 1 and "at/xml" in api:
+            err(f"{tag} type=1 是 JSON 接口，api 不能带 /at/xml/（那是 type=0 用的）")
+        if typ == 3 and not idx.get("spider"):
+            warn(f"{tag} type=3 需要顶层 spider 字段，当前为空")
+        for k in s:
+            if k.startswith("_"):
+                warn(f"{tag} 内部备注字段 {k} 泄漏到了电视配置里")
+
     if idx["sites"]:
-        ok(f"{len(idx['sites'])} 个站点字段完整")
+        ok(f"{len(idx['sites'])} 个影视站点字段完整")
     else:
-        ok("未配置点播站点，按纯直播模式运行（正常状态）")
+        warn("index.json 里没有影视站点；若候选池有接口，看 vod-health.json 是不是全被判死了")
 
     lives = idx.get("lives") or []
     total_ch = 0
@@ -105,38 +115,37 @@ def check_structure(idx):
     ok(f"{len(lives)} 个直播分组 / {total_ch} 个频道")
 
 
-def check_sites(idx):
-    print("\n[2/3] 站点连通性")
-    sites = [s for s in idx.get("sites", []) if s.get("type") == 4]
-    if not sites:
-        ok("无点播站点需要检测（纯直播模式）")
+def check_vod_health():
+    print("\n[2/4] 影视站探活")
+    if not os.path.exists(VOD_HEALTH):
+        warn("没有 vod-health.json，先跑一次 build.py")
         return
-    reachable = 0
-    for s in sites:
-        api = s.get("api", "")
-        host = urlparse(api).hostname or ""
-        if is_private(host):
-            warn(f"「{s.get('name')}」内网地址，跳过连通检测（需在局域网内自测）")
-            continue
-        url = api + ("&" if "?" in api else "?") + "ac=list"
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=10) as r:
-                body = r.read(4096).decode("utf-8", "ignore")
-            if '"class"' in body or '"list"' in body:
-                ok(f"「{s.get('name')}」接口正常")
-                reachable += 1
-            else:
-                warn(f"「{s.get('name')}」返回内容不像 CMS JSON，请确认接口类型")
-        except Exception as e:  # noqa: BLE001
-            warn(f"「{s.get('name')}」不可达（{type(e).__name__}），"
-                 f"若站点已下线请删除或更新 api")
-    if reachable == 0:
-        warn("没有任何可访问的公网点播站")
+    with open(VOD_HEALTH, encoding="utf-8") as f:
+        h = json.load(f)
+    s = h.get("summary", {})
+    total, alive = s.get("sites_total", 0), s.get("sites_alive", 0)
+    msg = f"{alive}/{total} 个接口可用（关键词「{h.get('keyword', '?')}」）"
+    if not h.get("probed", True):
+        warn(f"本次未探活（--no-probe）：{msg}")
+        return
+    if total == 0:
+        warn("候选池是空的，电视上只有直播、搜不了片")
+        return
+    if alive == 0:
+        err(f"所有影视接口都失效了：{msg}")
+    elif alive < total:
+        dead = [x["name"] for x in h.get("sites", []) if x.get("status") != "ok"]
+        warn(f"{msg}，已自动剔除：{'、'.join(dead)}")
+    else:
+        ok(f"{msg}，列表 / 详情 / 搜索三项均实测通过")
+    for x in h.get("sites", []):
+        if x.get("status") == "ok":
+            print(f"      {x['name']}: {x.get('total', 0)} 条 · "
+                  f"{x.get('list_ms', 0)}ms · 播放 {x.get('play_host', '?')}")
 
 
 def check_health():
-    print("\n[3/3] 直播可用率")
+    print("\n[3/4] 直播可用率")
     if not os.path.exists(HEALTH):
         warn("没有 health.json，先跑一次 build.py")
         return
@@ -155,7 +164,7 @@ def check_health():
     elif rate < 40:
         err(f"可用率过低：{msg}")
     elif rate < 70:
-        warn(f"可用率偏低：{msg}")
+        warn(f"可用率偏低（广告清洗后的预期结果）：{msg}")
     else:
         ok(msg)
 
@@ -164,6 +173,49 @@ def check_health():
         names = "、".join(c["name"] for c in dead[:10])
         more = f" 等 {len(dead)} 个" if len(dead) > 10 else ""
         print(f"      已剔除：{names}{more}")
+
+
+def check_artifacts(idx):
+    print("\n[4/4] 产物一致性")
+    ver = idx.get("version")
+    expect_ch = sum(len(g.get("channels", [])) for g in idx.get("lives", []))
+
+    for fn, want_sites, want_lives in (("vod.json", True, False),
+                                       ("live.json", False, True)):
+        path = os.path.join(CONFIG, fn)
+        if not os.path.exists(path):
+            err(f"缺少 {fn}")
+            continue
+        with open(path, encoding="utf-8") as f:
+            d = json.load(f)
+        if d.get("version") != ver:
+            err(f"{fn} 版本 {d.get('version')} 与 index.json 的 {ver} 不一致")
+        if want_sites and d.get("sites") != idx.get("sites"):
+            err(f"{fn} 的 sites 与 index.json 不一致")
+        if want_lives and d.get("lives") != idx.get("lives"):
+            err(f"{fn} 的 lives 与 index.json 不一致")
+        if want_sites and d.get("lives"):
+            err(f"{fn} 不该带 lives")
+        if want_lives and d.get("sites"):
+            err(f"{fn} 不该带 sites")
+
+    txt = os.path.join(CONFIG, "live.txt")
+    m3u = os.path.join(CONFIG, "live.m3u")
+    if os.path.exists(txt):
+        lines = [l for l in open(txt, encoding="utf-8").read().splitlines() if l.strip()]
+        ch = [l for l in lines if "," in l and not l.endswith(",#genre#")]
+        if len(ch) != expect_ch:
+            err(f"live.txt 有 {len(ch)} 个频道，index.json 里是 {expect_ch} 个")
+    else:
+        err("缺少 live.txt")
+    if os.path.exists(m3u):
+        n = sum(1 for l in open(m3u, encoding="utf-8").read().splitlines()
+                if l.startswith("#EXTINF"))
+        if n != expect_ch:
+            err(f"live.m3u 有 {n} 个频道，index.json 里是 {expect_ch} 个")
+    else:
+        err("缺少 live.m3u")
+    ok(f"index / vod / live / txt / m3u 版本 {ver}、{expect_ch} 个频道对齐")
 
 
 def main():
@@ -177,8 +229,9 @@ def main():
         idx = json.load(f)
 
     check_structure(idx)
-    check_sites(idx)
+    check_vod_health()
     check_health()
+    check_artifacts(idx)
 
     print("\n" + "=" * 56)
     if errors:

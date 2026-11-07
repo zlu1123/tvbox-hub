@@ -25,8 +25,8 @@
 {
   "key": "唯一ID",
   "name": "显示名",
-  "type": 4,
-  "api": "http://.../api.php/provide/vod/",
+  "type": 1,
+  "api": "http://.../api.php/provide/vod/from/ffm3u8/",
   "searchable": 1,
   "quickSearch": 1,
   "filterable": 1,
@@ -38,12 +38,16 @@
 
 | type | 含义 | api 填什么 |
 |---|---|---|
-| 0 | 纯 jar 扩展 | 通常是 `csp_XXX`，依赖顶层 `spider` 指向的 jar |
-| 1 | XML 源 | 一个 xml 地址 |
-| 3 | 带自定义类的 jar | `csp_XXX` + `ext` 传参 |
-| 4 | **标准接口** | 苹果CMS v10 的 `api.php/provide/vod/` 地址 |
+| 0 | XML 源 | 苹果CMS 的 `api.php/provide/vod/at/xml/` 地址 |
+| 1 | **JSON 源（苹果CMS v10）** | `api.php/provide/vod/`，**不带** `at/xml` |
+| 3 | jar 扩展（CSP） | `csp_XXX` + `ext` 传参，依赖顶层 `spider` 指向的 jar |
+| 4 | 部分分支的扩展类型 | 本项目不用 |
 
-> 本项目只用 `type: 4`，因为它是唯一不依赖第三方 jar 的类型——jar 一旦停更，整站全废；接口地址只依赖对方服务器。
+> 本项目只用 **`type: 1`**。查过公开 TVBox 配置里 231 个 `provide/vod` 站点用 `type: 1`、12 个用 `type: 0`（都带 `at/xml`），`type: 4` 在 TVBox 语境下查无实据 —— 早期文档这里写错过，已修正。
+>
+> 不碰 `type: 3`：它要在电视上从远端下载 jar 并执行，jar 一旦停更整站全废，而且等于把设备交给别人。纯 JSON 接口只依赖对方服务器返回数据，`spider` 可以一直留空。
+
+`api` 末尾建议加 `/from/<播放源名>/`（播放源名从 `?ac=detail` 返回的 `vod_play_from` 里取 m3u8 那个）。不加的话接口会把网页解析线路（`/share/…`，要跳转、常插广告）和 m3u8 直链一起返回，电视上第一条往往打不开；加了以后只返回指定线路，实测六个采集站全部给纯 m3u8 直链。
 
 三个开关：
 - `searchable` — 是否允许搜索

@@ -1,0 +1,89 @@
+{
+  "generated_at": "2026-11-07T17:06:42+08:00",
+  "probed": true,
+  "keyword": "流浪地球",
+  "summary": {
+    "sites_total": 6,
+    "sites_alive": 6
+  },
+  "sites": [
+    {
+      "key": "ffzy",
+      "name": "非凡资源",
+      "api": "http://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/",
+      "status": "ok",
+      "error": "",
+      "total": 98996,
+      "classes": 31,
+      "search_hits": 4,
+      "list_ms": 453,
+      "play_host": "super.ffzy-online6.com",
+      "play_is_m3u8": true
+    },
+    {
+      "key": "dytt",
+      "name": "电影天堂",
+      "api": "http://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/",
+      "status": "ok",
+      "error": "",
+      "total": 85025,
+      "classes": 32,
+      "search_hits": 4,
+      "list_ms": 2500,
+      "play_host": "vip.dytt-network.com",
+      "play_is_m3u8": true
+    },
+    {
+      "key": "360zy",
+      "name": "360资源",
+      "api": "https://360zy.com/api.php/provide/vod/from/360zy/",
+      "status": "ok",
+      "error": "",
+      "total": 74602,
+      "classes": 51,
+      "search_hits": 3,
+      "list_ms": 706,
+      "play_host": "vod1.maowushi.com",
+      "play_is_m3u8": true
+    },
+    {
+      "key": "lziapi",
+      "name": "量子资源",
+      "api": "http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/",
+      "status": "ok",
+      "error": "",
+      "total": 162940,
+      "classes": 40,
+      "search_hits": 20,
+      "list_ms": 327,
+      "play_host": "v.lfthirtytwo.com",
+      "play_is_m3u8": true
+    },
+    {
+      "key": "bfzy",
+      "name": "暴风资源",
+      "api": "http://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/",
+      "status": "ok",
+      "error": "",
+      "total": 171096,
+      "classes": 49,
+      "search_hits": 20,
+      "list_ms": 1105,
+      "play_host": "v.fengbao14.com",
+      "play_is_m3u8": true
+    },
+    {
+      "key": "modu",
+      "name": "魔都资源",
+      "api": "http://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/",
+      "status": "ok",
+      "error": "",
+      "total": 91443,
+      "classes": 0,
+      "search_hits": 4,
+      "list_ms": 16482,
+      "play_host": "play.modujx17.com",
+      "play_is_m3u8": true
+    }
+  ]
+}

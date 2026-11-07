@@ -1,11 +1,11 @@
 {
-  "generated_at": "2026-11-07T15:25:23+08:00",
+  "generated_at": "2026-11-07T17:06:22+08:00",
   "probed": true,
   "summary": {
     "channels_total": 79,
     "channels_alive": 38,
     "lines_total": 159,
-    "lines_alive": 44
+    "lines_alive": 43
   },
   "channels": [
     {
@@ -230,18 +230,17 @@
       "lines_total": 1,
       "lines_alive": 0,
       "errors": [
-        "URLError"
+        "HTTP 404"
       ]
     },
     {
       "name": "云南卫视",
       "group": "卫视",
-      "status": "dead",
+      "status": "partial",
       "lines_total": 3,
-      "lines_alive": 0,
+      "lines_alive": 1,
       "errors": [
         "RemoteDisconnected",
-        "广告跳转",
         "超时"
       ]
     },
@@ -548,11 +547,12 @@
     {
       "name": "陕西卫视",
       "group": "卫视",
-      "status": "partial",
+      "status": "dead",
       "lines_total": 2,
-      "lines_alive": 1,
+      "lines_alive": 0,
       "errors": [
-        "URLError"
+        "URLError",
+        "广告跳转"
       ]
     },
     {
@@ -592,9 +592,10 @@
       "group": "央视",
       "status": "partial",
       "lines_total": 3,
-      "lines_alive": 2,
+      "lines_alive": 1,
       "errors": [
-        "HTTP 403"
+        "HTTP 403",
+        "广告跳转"
       ]
     },
     {
@@ -656,7 +657,7 @@
       "errors": [
         "HTTP 403",
         "RemoteDisconnected",
-        "假台(与其他台同源)"
+        "超时"
       ]
     },
     {
@@ -748,7 +749,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "广告跳转"
       ]
     },
     {
@@ -777,7 +779,8 @@
       "lines_alive": 0,
       "errors": [
         "HTTP 403",
-        "URLError"
+        "URLError",
+        "超时"
       ]
     },
     {

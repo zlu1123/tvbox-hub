@@ -14,6 +14,7 @@
 #    ./scripts/refresh.sh              # 探活 + 整体提交 + 双推
 #    ./scripts/refresh.sh --no-probe   # 不探活，只重新抓清单（很快）
 #    ./scripts/refresh.sh --dry        # 只看结果，不提交不推送
+#    ./scripts/refresh.sh -m "说明"    # 自定义提交信息（默认按时间生成）
 # =============================================================================
 set -uo pipefail
 
@@ -24,13 +25,17 @@ warn() { printf '%s!%s %s\n' "$YEL" "$RST" "$*"; }
 die()  { printf '%s✗%s %s\n' "$RED" "$RST" "$*" >&2; exit 1; }
 step() { printf '\n%s▸ %s%s\n' "$DIM" "$*" "$RST"; }
 
-NO_PROBE=""; DRY=0
-for a in "$@"; do
-  case "$a" in
-    --no-probe) NO_PROBE="--no-probe" ;;
-    --dry)      DRY=1 ;;
-    -h|--help)  sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *)          die "未知参数：$a" ;;
+NO_PROBE=""; DRY=0; MSG=""
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --no-probe) NO_PROBE="--no-probe"; shift ;;
+    --dry)      DRY=1; shift ;;
+    -m|--message)
+      MSG="${2:-}"
+      [ -n "$MSG" ] || die "-m 后面要跟提交信息"
+      shift 2 ;;
+    -h|--help)  sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *)          die "未知参数：$1" ;;
   esac
 done
 
@@ -86,9 +91,10 @@ if [ -z "$(git status --porcelain)" ]; then
 fi
 
 git add -A
+[ -n "$MSG" ] || MSG="chore: 本地探活刷新 $(date '+%Y-%m-%d %H:%M')"
 git -c user.name="$(git config user.name || echo tvbox)" \
     -c user.email="$(git config user.email || echo tvbox@local)" \
-    commit -q -m "chore: 本地探活刷新 $(date '+%Y-%m-%d %H:%M')"
+    commit -q -m "$MSG"
 
 LOG=$(mktemp)
 PUSHED=0

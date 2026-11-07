@@ -8,13 +8,13 @@
 | 填在哪 | 用哪个地址 | 说明 |
 |---|---|---|
 | **接口 / 配置地址**（要 JSON 的框） | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/index.json` | 直播+影视合一 |
-| **直播源**（提示「支持 txt、m3u」的框） | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.txt` | 38 个台 |
+| **直播源**（提示「支持 txt、m3u」的框） | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.txt` | 30~40 个台 |
 | 同上，m3u 格式 | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.m3u` | 二选一 |
-| 纯影视 | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/vod.json` | 影视源目前为空 |
+| 纯影视（可选） | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/vod.json` | 6 个接口，能搜片 |
 
 > ⚠️ 别把 `index.json` 填进「直播源」框——那个框只认 txt / m3u，填 JSON 会提示「支持 txt、支持 m3u」并加载失败。反过来，`live.txt` 也别填进「接口」框。
 
-直播源现在是 **38 个实测可播、零广告**的频道（央视 9 + 卫视 15 + 地方 14）。影视源是空的，需要你填一个接口地址 —— 见 [影视源](#影视源搜电影剧集)。
+直播源是 **30~40 个实测可播、零广告**的频道（免费流每次探活会抖，以 `health.json` 为准）。影视源已经配好 6 个苹果CMS 接口，搜索框直接搜片名 —— 见 [影视源](#影视源搜电影剧集)。
 
 ---
 

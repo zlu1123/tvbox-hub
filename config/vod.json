@@ -1,9 +1,70 @@
 {
   "name": "我的 TVBox 源 - 影视",
-  "version": "1.0.28",
+  "version": "1.0.32",
   "wallpaper": "",
   "spider": "",
-  "sites": [],
+  "sites": [
+    {
+      "key": "ffzy",
+      "name": "非凡资源",
+      "type": 1,
+      "api": "http://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "ext": ""
+    },
+    {
+      "key": "dytt",
+      "name": "电影天堂",
+      "type": 1,
+      "api": "http://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "ext": ""
+    },
+    {
+      "key": "360zy",
+      "name": "360资源",
+      "type": 1,
+      "api": "https://360zy.com/api.php/provide/vod/from/360zy/",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "ext": ""
+    },
+    {
+      "key": "lziapi",
+      "name": "量子资源",
+      "type": 1,
+      "api": "http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "ext": ""
+    },
+    {
+      "key": "bfzy",
+      "name": "暴风资源",
+      "type": 1,
+      "api": "http://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/",
+      "searchable": 1,
+      "quickSearch": 1,
+      "filterable": 1,
+      "ext": ""
+    },
+    {
+      "key": "modu",
+      "name": "魔都资源",
+      "type": 1,
+      "api": "http://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/",
+      "searchable": 1,
+      "quickSearch": 0,
+      "filterable": 1,
+      "ext": ""
+    }
+  ],
   "lives": [],
   "parses": [],
   "flags": [
