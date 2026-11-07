@@ -14,11 +14,50 @@ meta:
 live:
   enabled: true
 
-  # 上游 M3U / TXT 清单，按顺序抓取合并。
-  # 想加自己的源，直接在下面追加一条即可（支持 m3u / m3u8 / txt: "频道名,url" 两种格式）。
+  # 上游 M3U / TXT 清单，**按顺序抓取合并**。
+  # 顺序 = 优先级：同一个台在多个上游都有时，排前面的上游的线路会被优先写进
+  # live.txt / live.m3u（电视上只认第一个），后面的当作备用线路。
   upstreams:
+    # ① 央视主力：移动 CDN（gslbserv.itv.cmvideo.cn）官方转码流。
+    #    全国可达、没有广告跳转，是目前最稳的央视来源。
+    #    这个文件里还混了 NewTV / iHOT / SiTV 这些点播品牌频道，用 groups 只留央视组。
+    - name: fanmingming-cctv
+      url: "https://cdn.jsdelivr.net/gh/fanmingming/live@main/tv/m3u/itv.m3u"
+      groups: ["央视"]
+      # 一个台给了 普通 / 50FPS / HEVC 三个版本，电视是 Android 6 的老 SoC，
+      # 留 HEVC 和 50FPS 只会让播放器切到解不动的流上黑屏。
+      exclude:
+        - "\\d+\\s*FPS|HEVC|HDR|Multi-Audio"
+      max_lines: 2
+
+    # ② 卫视主力：Guovin/iptv-api 的 gd 分支，跑在 GitHub Actions 上，
+    #    每天自动测速重排，所以线路是「此刻最快」的，覆盖 43 个卫视。
+    #    一个台会给十几条备用线，max_lines 截断到 2 条，避免探活时间爆炸。
+    - name: guovin
+      url: "https://cdn.jsdelivr.net/gh/Guovin/iptv-api@gd/output/result.m3u"
+      groups: ["📺央视频道", "📡卫视频道"]
+      max_lines: 2
+
+    # ③ 地方台来源。iptv-org 的央视那批全部指向同一个广告跳转农场
+    #    （74.91.26.218 → 142.54.178.42/applive/mkt.m3u8，mkt = marketing），
+    #    所以这里把整批广告线路按 IP 干掉，只留它真正在转播的地方台。
     - name: iptv-org-cn
       url: "https://iptv-org.github.io/iptv/countries/cn.m3u"
+      # 它的清单里有一百多个英文名的县市级小台，全收进来电视上就是一屏英文。
+      # only_mapped = 只收下面 name_map 里人工给了中文名的台。
+      only_mapped: true
+      exclude:
+        - "74\\.91\\.26\\.218|69\\.30\\.245\\.50|142\\.54\\.178\\.42"
+        - "go\\.bkpcp\\.top|applive|mkt\\.m3u8"
+      max_lines: 2
+
+    # ④ 补充源（suxuang/myIPTV）。它的央视线路同样是代理农场，但混着几个
+    #    官方/干净源，值得捞一捞。用 include 只挑可信的台，其余一概不要。
+    - name: myiptv
+      url: "https://cdn.jsdelivr.net/gh/suxuang/myIPTV@main/ipv4.m3u"
+      include:
+        - "东方卫视"                 # bestv.cn 官方源，实测可达
+      max_lines: 1
 
     # 你自己的源（比如运营商 IPTV 抓包得到的 m3u、或你自己维护的 txt 清单）。
     # trust: true 表示跳过上面的 include/exclude 白名单，里面有什么就收什么。
@@ -32,7 +71,8 @@ live:
   # （那些流只在境外可达），白名单只会把真正能看的频道挤掉。
   include: []
 
-  # 命中以下正则的条目直接丢弃
+  # 命中以下正则的条目直接丢弃。规则会同时匹配「台名」和「线路 URL」，
+  # 所以既能按台名过滤，也能整批拉黑一批主机。
   exclude:
     - "Not 24/7"                 # 不是全天播的，半天黑屏
     - "Geo-blocked"
@@ -40,6 +80,18 @@ live:
     - "CCTV\\+\\s?\\d"           # CCTV+ 是海外商业频道，不是央视
     - "VoA|Voice of America|BRICS"
     - "ABN|Angel TV|Bread TV|Ando TV|High Channel TV"
+    - "支持作者|更新时间|测试|备用|请勿|公告"   # 源作者塞进来的广告位/通知位
+
+    # —— 广告农场（实测证据）——
+    # 这批主机把几十个台名全指到同一个跳转池，随机跳到
+    # :88/applive/xxx.m3u8（mkt=广告位 / yss=一条共用流），
+    # 点开不是广告就是和台名对不上的画面。实测同一 URL 两次请求会
+    # 分别拿到真流和广告流，所以只能整批拉黑，不能靠探活碰运气。
+    - "://(?:74\\.91\\.26\\.218|69\\.30\\.245\\.|69\\.197\\.|38\\.75\\.136\\.137|63\\.141\\.230\\.178|207\\.56\\.13\\.146|173\\.208\\.234\\.146|107\\.150\\.60\\.122|142\\.54\\.(?:162|168|178)\\.)"
+
+    # —— 不是直播的伪线路 ——
+    # 把一段短视频 mp4 当「卫视直播」挂上来，播几秒就循环/结束。
+    - "kwimgs\\.com|\\.mp4($|\\?)"
 
   # 上游清单里整个分组不要的，写分组名（对应 m3u 的 group-title）
   exclude_groups:
@@ -116,13 +168,14 @@ live:
   # 频道名清洗后作为唯一键，同一频道多个地址会合并成多线路（TVBox 自动容错切换）
   max_lines_per_channel: 4
 
-  # 探活：真正去拉一遍 m3u8，死链直接不写进配置
+  # 探活：真正去拉清单 + 拉第一个视频分片，死链直接不写进配置
   probe:
     enabled: true
-    timeout: 8            # 单个流超时（秒）
-    workers: 24           # 并发数
-    # 连续 2 次探活失败才判定为死链，避免误杀
-    retries: 2
+    timeout: 10           # 单个流超时（秒）
+    # 这些免费流多半跑在境外小 VPS 上，并发一高就直接 reset 连接，
+    # 32 并发时误判成死链的比真死的还多。8 并发慢一点但测得准。
+    workers: 8
+    retries: 1
 
 # ------------------------------------------------------------
 # 影视源（点播）—— TVBox / 影视仓 里搜电影电视剧用的就是这里

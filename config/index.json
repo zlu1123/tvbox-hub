@@ -1,6 +1,6 @@
 {
   "name": "我的 TVBox 源",
-  "version": "1.0.18",
+  "version": "1.0.28",
   "wallpaper": "",
   "spider": "",
   "sites": [],
@@ -11,37 +11,39 @@
         {
           "name": "CCTV-1",
           "urls": [
-            "http://74.91.26.218:82/live/cctv1hd.m3u8"
+            "http://204.12.221.218:8181/3m1080p/cctv1.m3u8",
+            "http://198.204.228.26/live/cctv1hd.m3u8"
           ],
-          "logo": "https://i.imgur.com/TpA3cUl.png"
+          "logo": "https://live.fanmingming.com/tv/CCTV1.png"
         },
         {
           "name": "CCTV-2",
           "urls": [
-            "http://74.91.26.218:82/live/cctv2hd.m3u8"
+            "http://204.12.221.218:8181/3m1080p/cctv2.m3u8",
+            "http://bztv.tvbus.cc:8081/cdnlive/cctv2.m3u8"
           ],
-          "logo": "https://i.imgur.com/ILamhwU.png"
+          "logo": "https://live.fanmingming.com/tv/CCTV2.png"
         },
         {
-          "name": "CCTV-3",
+          "name": "CCTV-4",
           "urls": [
-            "http://74.91.26.218:82/live/cctv3hd.m3u8"
+            "http://173.208.212.130:8181/1080p/cctv4.m3u8"
           ],
-          "logo": "https://i.imgur.com/iFlkIuw.png"
+          "logo": "https://www.xn--rgv465a.top/tvlogo/CCTV-4.png"
         },
         {
-          "name": "CCTV-7",
+          "name": "CCTV-6",
           "urls": [
-            "http://74.91.26.218:82/live/cctv7hd.m3u8"
+            "http://198.204.228.26/live/cctv6hd.m3u8"
           ],
-          "logo": "https://i.imgur.com/CKcPMQC.png"
+          "logo": "https://live.fanmingming.com/tv/CCTV6.png"
         },
         {
           "name": "CCTV-8",
           "urls": [
-            "http://74.91.26.218:82/live/cctv8hd.m3u8"
+            "http://bztv.tvbus.cc:8081/cdnlive/cctv8.m3u8"
           ],
-          "logo": "https://i.imgur.com/GyHaZ8X.png"
+          "logo": "https://live.fanmingming.com/tv/CCTV8.png"
         },
         {
           "name": "CCTV-8K 超高清",
@@ -53,65 +55,25 @@
         {
           "name": "CCTV-9",
           "urls": [
-            "https://xykt-fix.github.io/Y77.m3u8"
+            "http://192.151.150.154/live/cctv9hd.m3u8"
           ],
-          "logo": "https://i.imgur.com/3tivvMm.png"
-        },
-        {
-          "name": "CCTV-10",
-          "urls": [
-            "http://74.91.26.218:82/live/cctv10hd.m3u8"
-          ],
-          "logo": "https://i.imgur.com/sSSO7UD.png"
-        },
-        {
-          "name": "CCTV-11",
-          "urls": [
-            "http://74.91.26.218:82/live/cctv11hd.m3u8"
-          ],
-          "logo": "https://i.imgur.com/CjOWx7L.png"
-        },
-        {
-          "name": "CCTV-12",
-          "urls": [
-            "http://74.91.26.218:82/live/cctv12hd.m3u8"
-          ],
-          "logo": "https://i.imgur.com/3yTuiOM.png"
-        },
-        {
-          "name": "CCTV-13",
-          "urls": [
-            "http://74.91.26.218:82/live/cctv13hd.m3u8"
-          ],
-          "logo": "https://i.imgur.com/6MTar6J.png"
+          "logo": "https://live.fanmingming.com/tv/CCTV9.png"
         },
         {
           "name": "CCTV-14",
           "urls": [
-            "http://74.91.26.218:82/live/cctv14hd.m3u8"
+            "http://198.204.228.26/live/cctv14hd.m3u8",
+            "http://204.12.221.218:8181/3m1080p/cctv14.m3u8"
           ],
-          "logo": "https://i.imgur.com/c5SXW7i.png"
+          "logo": "https://live.fanmingming.com/tv/CCTV14.png"
         },
         {
           "name": "CCTV-15",
           "urls": [
-            "http://74.91.26.218:82/live/cctv15hd.m3u8"
+            "http://204.12.221.218:8181/3m1080p/cctv15.m3u8",
+            "http://198.204.228.26/live/cctv15hd.m3u8"
           ],
-          "logo": "https://i.imgur.com/CCV0eRG.png"
-        },
-        {
-          "name": "CCTV-16",
-          "urls": [
-            "http://74.91.26.218:82/live/cctv16hd.m3u8"
-          ],
-          "logo": "https://i.imgur.com/ZzV6JQp.png"
-        },
-        {
-          "name": "CCTV-17",
-          "urls": [
-            "http://74.91.26.218:82/live/cctv17hd.m3u8"
-          ],
-          "logo": "https://i.imgur.com/jSQURxS.png"
+          "logo": "https://www.xn--rgv465a.top/tvlogo/CCTV-15.png"
         }
       ]
     },
@@ -119,18 +81,47 @@
       "group": "卫视",
       "channels": [
         {
+          "name": "三沙卫视",
+          "urls": [
+            "http://198.204.228.26/live/ssws.m3u8"
+          ],
+          "logo": "https://www.xn--rgv465a.top/tvlogo/三沙卫视.png"
+        },
+        {
+          "name": "东方卫视4K",
+          "urls": [
+            "http://bp-resource-dfl.bestv.cn/148/3/video.m3u8"
+          ],
+          "logo": "https://gitee.com/suxuang/logo/raw/master/mylogo/东方卫视4K.png"
+        },
+        {
           "name": "内蒙古卫视",
           "urls": [
             "https://cdn4.skygo.mn/live/disk1/NeigMGL/HLSv3-FTA/NeigMGL.m3u8"
           ],
-          "logo": "https://i.imgur.com/WeugJBE.png"
+          "logo": "https://www.xn--rgv465a.top/tvlogo/内蒙古卫视.png"
         },
         {
           "name": "安徽卫视",
           "urls": [
+            "http://204.12.221.218:8181/3m1080p/ahws.m3u8",
             "https://restream.pdtvhd.com/memfs/c1cd2ed0-3b2b-4c25-af98-a7fb0b1eb130.m3u8"
           ],
-          "logo": "https://i.imgur.com/gDn101f.png"
+          "logo": "https://www.xn--rgv465a.top/tvlogo/安徽卫视.png"
+        },
+        {
+          "name": "山东卫视",
+          "urls": [
+            "http://198.204.228.26/live/sdwshd.m3u8"
+          ],
+          "logo": "https://www.xn--rgv465a.top/tvlogo/山东卫视.png"
+        },
+        {
+          "name": "广西卫视",
+          "urls": [
+            "http://198.204.228.26/live/gxwshd.m3u8"
+          ],
+          "logo": "https://www.xn--rgv465a.top/tvlogo/广西卫视.png"
         },
         {
           "name": "康巴卫视",
@@ -140,11 +131,33 @@
           "logo": "https://www.tvchinese.net/uploads/tv/kangbatv.jpg"
         },
         {
+          "name": "新疆卫视",
+          "urls": [
+            "http://198.204.228.26/live/xjws.m3u8"
+          ],
+          "logo": "https://www.xn--rgv465a.top/tvlogo/新疆卫视.png"
+        },
+        {
+          "name": "江西卫视",
+          "urls": [
+            "http://112.27.5.218:9901/tsfile/live/faacts/0138_1.m3u8?key=txiptv&playlive=1&authid=0"
+          ],
+          "logo": "https://www.xn--rgv465a.top/tvlogo/江西卫视.png"
+        },
+        {
           "name": "河北卫视",
           "urls": [
             "https://event.pull.hebtv.com/live/live101.m3u8"
           ],
-          "logo": "https://i.imgur.com/Z5Ppzbi.png"
+          "logo": "https://www.xn--rgv465a.top/tvlogo/河北卫视.png"
+        },
+        {
+          "name": "浙江卫视",
+          "urls": [
+            "https://ali-m-l.cztv.com/channels/lantian/channel001/1080p.m3u8",
+            "http://ali-m-l.cztv.com/channels/lantian/channel01/1080p.m3u8"
+          ],
+          "logo": "https://www.xn--rgv465a.top/tvlogo/浙江卫视.png"
         },
         {
           "name": "湖南卫视",
@@ -158,7 +171,7 @@
           "urls": [
             "https://pili-live-hls-zdzz-tv.zzxwcm.cn/zdzz-tv/nqzh.m3u8"
           ],
-          "logo": "https://i.imgur.com/V0v3ST5.png"
+          "logo": "https://www.xn--rgv465a.top/tvlogo/西藏卫视.png"
         },
         {
           "name": "西藏卫视藏语",
@@ -166,6 +179,13 @@
             "https://live.vtibet.cn/live/ZYWS20261016.stream.m3u8"
           ],
           "logo": "https://i.imgur.com/NtvfnVV.png"
+        },
+        {
+          "name": "陕西卫视",
+          "urls": [
+            "http://192.151.150.154/live/snwshd.m3u8"
+          ],
+          "logo": "https://www.xn--rgv465a.top/tvlogo/陕西卫视.png"
         }
       ]
     },
@@ -173,53 +193,18 @@
       "group": "其他",
       "channels": [
         {
-          "name": "QTV-2",
-          "urls": [
-            "http://video10.qtv.com.cn/drm/qtv2at/manifest.m3u8"
-          ],
-          "logo": "https://www.tvchinese.net/uploads/tv/qdtv2.jpg"
-        },
-        {
-          "name": "QTV-5",
-          "urls": [
-            "http://video10.qtv.com.cn/drm/qtv5at/manifest.m3u8"
-          ],
-          "logo": "https://www.tvchinese.net/uploads/tv/qdtv5.jpg"
-        },
-        {
-          "name": "Siping TV",
-          "urls": [
-            "http://stream2.jlntv.cn/sptv/sd/live.m3u8?_upt=f27750421743154598"
-          ],
-          "logo": "https://www.tvchinese.net/uploads/tv/sptv1.jpg"
-        },
-        {
-          "name": "Xinjiang TV 2",
-          "urls": [
-            "http://110.153.180.106:55555/out_3/index.m3u8"
-          ],
-          "logo": "https://i.imgur.com/GXFLqxx.png"
-        },
-        {
-          "name": "Xinjiang TV 3",
-          "urls": [
-            "http://110.153.180.106:55555/out_2/index.m3u8"
-          ],
-          "logo": "https://i.imgur.com/l8S5qQB.png"
-        },
-        {
-          "name": "Xinjiang TV 8",
-          "urls": [
-            "http://120.70.60.179:9901/tsfile/live/1002_1.m3u8?authid=0&key=txiptv&playlive=1"
-          ],
-          "logo": "https://i.imgur.com/JJw1Ndc.png"
-        },
-        {
           "name": "东莞综合新闻频道",
           "urls": [
             "http://stream.sun0769.com/dgrtv1/mp4tv1_1500.flv"
           ],
           "logo": "https://www.tvchinese.net/uploads/tv/dgtv1.jpg"
+        },
+        {
+          "name": "中国教育一台",
+          "urls": [
+            "http://198.204.228.26/live/cetv1hd.m3u8"
+          ],
+          "logo": "https://live.fanmingming.com/tv/CETV1.png"
         },
         {
           "name": "兰州文旅频道",
@@ -250,41 +235,6 @@
           "logo": "https://www.tvchinese.net/uploads/tv/haerbin.jpg"
         },
         {
-          "name": "央视兵器科技",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/gfjs.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/QlF96eS.png"
-        },
-        {
-          "name": "央视卫生健康",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/wsjk.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/AzpRtCz.png"
-        },
-        {
-          "name": "央视台球",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/ystq.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/WK3keM9.png"
-        },
-        {
-          "name": "央视女性时尚",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/nxss.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/FVbP0aP.png"
-        },
-        {
-          "name": "央视高尔夫网球",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/iqJJTmH.png"
-        },
-        {
           "name": "宜昌三峡旅游生活",
           "urls": [
             "https://liveplay.ycrmt.cn/sxgd/lysh.m3u8"
@@ -304,20 +254,6 @@
             "https://tencentplaybusiness.gztv.com/live/zonghes.m3u8"
           ],
           "logo": "https://i.imgur.com/ff3KQXp.png"
-        },
-        {
-          "name": "广西综艺旅游频道",
-          "urls": [
-            "http://111.59.24.227:8181/tsfile/live/1001_1.m3u8?authid=0&key=txiptv&playlive=1"
-          ],
-          "logo": "https://www.tvchinese.net/uploads/tv/gxzypd.jpg"
-        },
-        {
-          "name": "怀旧剧场",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/hjjc.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/TVs9PBc.png"
         },
         {
           "name": "浙江国际频道",
@@ -341,13 +277,6 @@
           "logo": "https://i.imgur.com/8YIrgB7.png"
         },
         {
-          "name": "第一剧场",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/dyjc.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/eFxD3hq.png"
-        },
-        {
           "name": "荆门综合新闻频道",
           "urls": [
             "https://stream.jmtv.com.cn/xwzh/sd/live.m3u8?_upt=341f4b8e1791883036"
@@ -360,27 +289,6 @@
             "http://play1-qk.nmtv.cn/live/1735546697341033.m3u8"
           ],
           "logo": "https://www.tvchinese.net/uploads/tv/cfxwzhpd.jpg"
-        },
-        {
-          "name": "风云剧场",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/fyjc.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/rEttkKm.png"
-        },
-        {
-          "name": "风云足球",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/Fy6HkX0.png"
-        },
-        {
-          "name": "风云音乐",
-          "urls": [
-            "http://38.75.136.137:98/gslb/dsdqpub/fyyy.m3u8?auth=testpub"
-          ],
-          "logo": "https://i.imgur.com/IiiRmrf.png"
         }
       ]
     }

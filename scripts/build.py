@@ -161,7 +161,7 @@ MULTI_SPACE = re.compile(r"\s+")
 
 
 QUALITY_TAIL = re.compile(
-    r"\s+(HD|SD|FHD|UHD|4K|8K|H265|HEVC|Multi|Audio)$", re.I
+    r"\s+(?:\d+\s*FPS|HD|SD|FHD|UHD|4K|8K|H\.?265|HEVC|AVC|Multi|Audio)$", re.I
 )
 
 
@@ -203,60 +203,89 @@ def cctv_sort_key(name):
 # --------------------------------------------------------------------------
 # 探活
 # --------------------------------------------------------------------------
+# 广告农场特征：这批 IP 把「央视频道」全指到同一个 applive/mkt.m3u8
+# （mkt = marketing），打开就是广告页或者根本播不出台。
+AD_TOKENS = re.compile(r"/applive/|mkt\.m3u8|/ad[sx]?/|advert|promo", re.I)
+
+
+def _fingerprint(seg, final_url):
+    """给一路流算指纹：保留目录名，只把分片文件名里的序号抹掉。
+    同一条 ts 流被挂上十个台名时（免费源常见的「假台」套路），
+    指纹会完全一样，据此可以把整批假台剔掉。
+    注意只能抹文件名里的数字 —— 目录名带台号（cctv2md / cctv6md），
+    一起抹掉会让所有央视线路撞成同一个指纹，反而全被误杀。
+    故意不把主机算进去：这种农场往往在多个 IP 上铺同一路流。"""
+    from urllib.parse import urljoin, urlparse
+    if not re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", seg):
+        seg = urljoin(final_url, seg)
+    path = urlparse(seg).path.strip("/")
+    d, _, f = path.rpartition("/")
+    f = re.sub(r"\d+", "", f)
+    return f"{d}/{f}" if d else f
+
+
 def _probe_once(url, timeout=8):
-    """单次深度探活：验清单 + 拉真实视频分片"""
+    """单次深度探活：验清单 + 拉真实视频分片 + 算流指纹"""
     try:
         req = urllib.request.Request(url, headers={"User-Agent": UA})
         with urllib.request.urlopen(req, timeout=timeout) as r:
             final_url = r.geturl()
             head = r.read(16384).decode("utf-8", "ignore")
 
+        if AD_TOKENS.search(final_url):
+            return {"ok": False, "err": "广告跳转", "fp": "", "url": final_url}
+
         lower = final_url.split("?")[0].lower()
         if not lower.endswith((".m3u8", ".m3u")):
-            return True, ""          # 非清单类（直链 ts/flv 等），能连上就算活
+            return {"ok": True, "err": "", "fp": "", "url": final_url}
 
         if "#EXTM3U" not in head.upper():
-            return False, "非有效 m3u8"
+            return {"ok": False, "err": "非有效 m3u8", "fp": "", "url": final_url}
 
         # 取清单里第一条真实地址（可能是分片，也可能是子清单）
         seg = next((l.strip() for l in head.splitlines()
                     if l.strip() and not l.strip().startswith("#")), "")
         if not seg:
-            return False, "清单里没有分片"
+            return {"ok": False, "err": "清单里没有分片", "fp": "", "url": final_url}
 
-        if not re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", seg):
-            from urllib.parse import urljoin
-            seg = urljoin(final_url, seg)
+        from urllib.parse import urljoin
+        seg_url = seg if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", seg) \
+            else urljoin(final_url, seg)
 
         req2 = urllib.request.Request(
-            seg, headers={"User-Agent": UA, "Range": "bytes=0-131071"})
+            seg_url, headers={"User-Agent": UA, "Range": "bytes=0-131071"})
         with urllib.request.urlopen(req2, timeout=timeout) as r2:
             if len(r2.read()) == 0:
-                return False, "分片为空"
-        return True, ""
+                return {"ok": False, "err": "分片为空", "fp": "", "url": final_url}
+        return {"ok": True, "err": "", "fp": _fingerprint(seg, final_url),
+                "url": final_url}
     except urllib.error.HTTPError as e:
-        return False, f"HTTP {e.code}"
+        return {"ok": False, "err": f"HTTP {e.code}", "fp": "", "url": url}
     except (socket.timeout, TimeoutError):
-        return False, "超时"
+        return {"ok": False, "err": "超时", "fp": "", "url": url}
     except Exception as e:  # noqa: BLE001
-        return False, type(e).__name__
+        return {"ok": False, "err": type(e).__name__, "fp": "", "url": url}
 
 
-def probe_one(url, timeout=8, attempts=3, need=2):
-    """共识探活：连测 attempts 次，至少成功 need 次才算活。
+def probe_one(url, timeout=8, attempts=2):
+    """共识探活：连测 attempts 次，失败后再给一次机会。
     这些免费流很不稳定，单次通过率抖动很大（实测同一服务器这分钟通下分钟断），
-    单次判定会让频道列表在两次构建之间来回跳。"""
-    ok_count, last_err = 0, ""
+    但测太多次又会被对方当成攻击直接 reset，2 次是最划算的折中。"""
+    attempts = max(1, int(attempts))
+    need = 1
+    ok_count, last = 0, None
     for _ in range(attempts):
-        ok, err = _probe_once(url, timeout)
-        if ok:
+        r = _probe_once(url, timeout)
+        if r["ok"]:
             ok_count += 1
+            if last is None or not last["ok"]:
+                last = r
             if ok_count >= need:
-                return True, ""
+                return r
         else:
-            last_err = err
+            last = r
             time.sleep(0.4)
-    return False, last_err
+    return last or {"ok": False, "err": "未知", "fp": "", "url": url}
 
 
 # --------------------------------------------------------------------------
@@ -284,7 +313,22 @@ def collect_live(cfg, do_probe=True, verbose=True):
         items = parse_playlist(text, up.get("base", ""))
         raw_count += len(items)
         trust = bool(up.get("trust"))
-        kept = 0
+        # 上游可以再加一层自己的排除/白名单，用来处理这个源特有的情况
+        # （比如 iptv-org 的 CCTV 全指向同一个广告跳转站；fanmingming 里
+        #   混了 NewTV/iHOT 这类点播品牌频道）
+        up_exc = [re.compile(p, re.I) for p in up.get("exclude", [])]
+        up_groups = {str(g).strip().lower() for g in up.get("groups", [])}
+        # 上游自己的白名单：设了的话，只收命中它的台（myiptv 这种几千条的大源
+        # 全靠这个精准挑选，否则会把电影轮播、外语台全塞进来）
+        up_inc = [re.compile(p, re.I) for p in up.get("include", [])]
+        # 只收 name_map 里给了中文名的台。iptv-org 那种英文清单里塞了几十个
+        # 县市级小台，全收进来电视上就是一屏英文，不如只留精选过的。
+        only_mapped = bool(up.get("only_mapped"))
+        # 这个上游每个台最多取几条线路（Guovin 这种一条台给十几条备用线的，
+        # 不设上限会白白增加探活时间）
+        up_cap = int(up.get("max_lines", 0) or 0)
+
+        local = {}   # 本轮上游内部先聚合，方便按上游单独截断
         for it in items:
             raw = it["name"]
             base = clean_name(raw)
@@ -292,23 +336,48 @@ def collect_live(cfg, do_probe=True, verbose=True):
                 continue
             # 优先用映射表里的中文名，没有就用清洗后的原名
             name = name_map.get(base, base)
+            if only_mapped and base not in name_map:
+                continue
             if not trust:
                 if it.get("group", "").strip().lower() in exc_groups:
                     continue
+                if up_groups and it.get("group", "").strip().lower() not in up_groups:
+                    continue
+                # 上游自己的白名单优先，其次才是全局 include
+                if up_inc and not any(p.search(name) or p.search(raw)
+                                      for p in up_inc):
+                    continue
                 if inc and not any(p.search(name) or p.search(raw) for p in inc):
                     continue
-                if any(p.search(raw) or p.search(name) for p in exc):
+                # 排除规则同时匹配台名和 URL —— 广告农场要按主机名拉黑，
+                # 光看台名它们也叫 "CCTV-1"，根本区分不出来。
+                if any(p.search(raw) or p.search(name) or p.search(it["url"])
+                       for p in exc):
                     continue
+                if up_exc and any(p.search(raw) or p.search(name) or p.search(it["url"])
+                                  for p in up_exc):
+                    continue
+            d = local.setdefault(name, {"urls": [], "logo": it.get("logo", "")})
+            if it["url"] not in d["urls"]:
+                d["urls"].append(it["url"])
+            if not d["logo"] and it.get("logo"):
+                d["logo"] = it["logo"]
+
+        # 合并进总池：上游顺序 = 线路优先级，先来的排在 urls 前面，
+        # 所以 live.txt / live.m3u 里写出的永远是排最前的那个上游。
+        for name, d in local.items():
             b = buckets.setdefault(
                 name,
-                {"name": name, "urls": [], "logo": it.get("logo", ""),
+                {"name": name, "urls": [], "logo": d["logo"],
                  "group": channel_group(name)},
             )
-            if it["url"] not in b["urls"]:
-                b["urls"].append(it["url"])
-            kept += 1
+            if not b.get("logo") and d["logo"]:
+                b["logo"] = d["logo"]
+            for u in (d["urls"][:up_cap] if up_cap else d["urls"]):
+                if u not in b["urls"]:
+                    b["urls"].append(u)
         if verbose:
-            print(f"  · {up['name']}: 抓到 {len(items)} 条，命中 {kept} 条")
+            print(f"  · {up['name']}: 抓到 {len(items)} 条，命中 {len(local)} 个台")
 
     # ---- 探活 ----
     all_urls = {n: list(b["urls"]) for n, b in buckets.items()}
@@ -332,13 +401,30 @@ def collect_live(cfg, do_probe=True, verbose=True):
                     print(f"\r  探活进度 {done}/{len(jobs)}", end="", flush=True)
         if verbose:
             print()
+
+        # ---- 假台检测 ----
+        # 免费源里最常见的套路：一路 ts 流挂上十几个台名，点进去发现
+        # CCTV-1、CCTV-3、北京卫视全是同一段画面。按流指纹归组，
+        # 一个指纹如果被 2 个以上不同台名共用，就把这批线路全判成假台。
+        fp_owner = {}
+        for (n, u), r in line_result.items():
+            if r.get("ok") and r.get("fp"):
+                fp_owner.setdefault(r["fp"], set()).add(n)
+        fake_fps = {fp for fp, owners in fp_owner.items() if len(owners) >= 2}
+        if fake_fps and verbose:
+            sample = sorted(next(iter(fp_owner[fp])) for fp in fake_fps)[:3]
+            print(color(f"  剔除假台线路 {len(fake_fps)} 组"
+                        f"（同一路流被多个台名共用，例如 {'、'.join(sample)}）", "y"))
+        for (n, u), r in list(line_result.items()):
+            if r.get("ok") and r.get("fp") in fake_fps:
+                line_result[(n, u)] = dict(r, ok=False, err="假台(与其他台同源)")
     else:
         for n, us in all_urls.items():
             for u in us:
-                line_result[(n, u)] = (True, "未探活")
+                line_result[(n, u)] = {"ok": True, "err": "", "fp": "", "url": u}
 
     def _ok(n, u):
-        return line_result.get((n, u), (True, ""))[0]
+        return line_result.get((n, u), {"ok": True})["ok"]
 
     # ---- 组装 ----
     groups = {"央视": [], "卫视": [], "其他": []}
@@ -348,8 +434,8 @@ def collect_live(cfg, do_probe=True, verbose=True):
         us = all_urls[name]
         ok_urls = [u for u in us if _ok(name, u)]
         alive_lines += len(ok_urls)
-        errs = sorted({line_result[(name, u)][1] for u in us
-                       if (name, u) in line_result and not line_result[(name, u)][0]})
+        errs = sorted({line_result[(name, u)]["err"] for u in us
+                       if (name, u) in line_result and not line_result[(name, u)]["ok"]})
 
         if not ok_urls:
             status = "dead"
