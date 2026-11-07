@@ -102,14 +102,10 @@ if [ "$PUSHED" -eq 1 ]; then
   SLUG=$(git remote get-url origin | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?#\1#')
   ok "已推送"
 
-  # jsDelivr 对 @main 分支有缓存（最长 12 小时），不刷的话电视看到的还是旧配置。
-  # 它直接读 git 仓库，不依赖 Pages，所以推完刷一下立即可用。
-  PURGED=0
-  for f in index live vod; do
-    curl -sS -m 20 "https://purge.jsdelivr.net/gh/$SLUG@main/config/$f.json" >/dev/null 2>&1 && PURGED=$((PURGED + 1))
-  done
-  [ "$PURGED" -gt 0 ] && ok "已刷新 CDN 缓存（$PURGED 个文件）" \
-                      || warn "CDN 缓存刷新失败，电视可能延迟几小时才生效"
+  # jsDelivr 对 @main 分支的「分支→commit」解析缓存最长 12 小时，
+  # purge 接口只清文件缓存、清不掉这个解析缓存（实测）。
+  # 所以电视端的新配置最多延迟 12 小时生效。想立刻生效，见 README「缓存」一节。
+  ok "已推送（电视端 jsDelivr 地址将在 12 小时内更新，急用见 README）"
 
   printf '\n电视上填这个地址：\n  %shttps://cdn.jsdelivr.net/gh/%s@main/config/index.json%s\n' \
     "$GRN" "$SLUG" "$RST"
