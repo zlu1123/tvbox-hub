@@ -105,7 +105,9 @@ if [ "$PUSHED" -eq 1 ]; then
   # 顺手推 Gitee（配了 remote 才推，失败不影响 GitHub 这条主线）。
   # Gitee raw 没有 jsDelivr 那种 12 小时分支缓存，电视用它的地址能立刻生效。
   if git remote get-url gitee >/dev/null 2>&1; then
-    if git push gitee main >/dev/null 2>&1; then
+    # 显式指定密钥：本机 ~/.ssh/config 的 Host * 会把 id_ed25519 挤掉
+    GITEE_SSH="ssh -i ${GITEE_SSH_KEY:-$HOME/.ssh/id_ed25519} -o IdentitiesOnly=yes"
+    if git -c "core.sshCommand=${GITEE_SSH}" push gitee main >/dev/null 2>&1; then
       ok "已同步 Gitee 镜像（推完立即生效）"
     else
       warn "Gitee 镜像没推上去（授权或仓库还没建好），不影响 GitHub"

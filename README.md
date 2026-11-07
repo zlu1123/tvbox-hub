@@ -136,17 +136,23 @@ https://xxx.com/api.php/provide/vod/?ac=list
    ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB171zlISrS+dxVRdncRAbKwV9YbLro7hBEfZtKP+Qor lukelzhang@lukedeMacBook-Pro.local
    ```
 
-2. 在 <https://gitee.com/projects/new> 新建一个**空的、公开的**仓库，名字填 `tvbox-hub`。
-   **不要**勾选「使用 Readme 文件初始化这个仓库」，否则首次推送会冲突。
+2. 在 <https://gitee.com/projects/new> 新建仓库，名字填 `tvbox-hub`，**不要**勾选「使用 Readme 文件初始化这个仓库」。
+   **并且必须设为「公开」** —— 私有仓库的 raw 地址匿名访问会返回 403，电视上就是「加载失败」。
+   在 <https://gitee.com/zlu1123/tvbox-hub/settings> 里可以检查/修改。新账号可能要先实名认证，公开后也可能有一段审核时间。
 
 3. 验证并推送：
 
    ```bash
-   ./scripts/push-gitee.sh --test    # 应显示 SSH 已授权
-   ./scripts/push-gitee.sh           # 推送当前 main
+   ./scripts/push-gitee.sh --test    # 应显示 "Hi zlu1123! You've successfully authenticated"
+   ./scripts/push-gitee.sh           # 推送当前 main，并自动自检 raw
+   ./scripts/push-gitee.sh --check  # 只自检电视端 raw 能否匿名访问
    ```
 
-`gitee` remote 已经配好了（`git@gitee.com:zlu1123/tvbox-hub.git`）。授权完成后，`./scripts/refresh.sh` 每次会自动双推 GitHub + Gitee，Gitee 推不上去只会警告、不影响主线。
+`--check` 是判断能不能用的唯一标准：它模拟电视不登录、匿名拉 `index.json`，返回 200 且能解析出 `lives` 才算通。**SSH 推送成功 ≠ 电视能读**，两者权限是分开的。
+
+> 本机 `~/.ssh/config` 的 `Host *` 写死了 `IdentityFile ~/.ssh/id_rsa`，会把 Gitee 上登记的 `id_ed25519` 挤掉（默认连接报 Permission denied）。脚本已显式 `ssh -i ~/.ssh/id_ed25519`，不改你的全局配置。
+
+`gitee` remote 已经配好了。授权完成后，`./scripts/refresh.sh` 每次会自动双推 GitHub + Gitee，Gitee 推不上去只会警告、不影响主线。
 
 ### 想立刻用新版、又不想等授权
 
