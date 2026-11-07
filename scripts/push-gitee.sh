@@ -9,10 +9,10 @@
 #      Certum Trusted Network CA，电视（Android 6）证书库里有这个根，
 #      而 github.io 用的 Let's Encrypt (ISRG Root X1) 它没有 → 加载失败。
 #
-#  一次性准备（只需做一次，见 README「Gitee 镜像」）：
-#    1) 在 Gitee 添加本机 SSH 公钥：https://gitee.com/profile/sshkeys
-#    2) 在 Gitee 新建一个**空的公开**仓库 tvbox-hub（不要勾初始化文件）
-#    3) 本脚本会自动配上 gitee remote，之后 `./scripts/refresh.sh` 会双推
+#  双 README：两个平台的 README.md 内容不同（docs/readme/ 下各自维护），
+#  所以 Gitee 的 main 与 GitHub 的 main 必然分叉。本脚本不直接 push HEAD，
+#  而是基于 Gitee 远端 HEAD 构造一个「只把 README.md 换成 Gitee 版」的提交，
+#  parent 指向远端当前 commit，保证 fast-forward。不要手动 git push gitee main。
 #
 #  用法：
 #    ./scripts/push-gitee.sh          # 推送 main（推完自动自检 raw）
@@ -88,19 +88,59 @@ else
 fi
 ok "gitee remote = $REMOTE_URL"
 
+# ---- 生成 Gitee 版 README（若还没生成）----
+GITEE_README=".build/README.gitee.md"
+if [ ! -f "$GITEE_README" ]; then
+  ./scripts/gen-readme.sh >/dev/null || die "生成 README 失败"
+fi
+
+# ---- 取 Gitee 远端当前 HEAD 作为 parent ----
 LOG=$(mktemp)
-if git -c "core.sshCommand=${SSH_CMD}" push gitee main >"$LOG" 2>&1; then
-  tail -3 "$LOG"
-  ok "已推送到 Gitee"
-else
-  tail -8 "$LOG"
-  echo
-  if grep -qi "Permission denied (publickey)\|Could not read Username" "$LOG"; then
+if ! git -c "core.sshCommand=${SSH_CMD}" fetch gitee main -q >"$LOG" 2>&1; then
+  tail -6 "$LOG"
+  if grep -qi "Permission denied (publickey)" "$LOG" 2>/dev/null; then
     rm -f "$LOG"
     die "认证失败。先执行 ./scripts/push-gitee.sh --test 看授权指引"
   fi
   rm -f "$LOG"
-  die "推送失败。确认 Gitee 上已建好空的公开仓库 ${OWNER}/${REPO}"
+  die "拉不到 Gitee 远端。确认仓库 ${OWNER}/${REPO} 已建好"
+fi
+PARENT=$(git rev-parse FETCH_HEAD 2>/dev/null || true)
+
+# ---- 用临时 index 构造「HEAD 的树 + Gitee 版 README」----
+IDX=$(mktemp); rm -f "$IDX"
+(
+  export GIT_INDEX_FILE="$IDX"
+  git read-tree HEAD || exit 1
+  BLOB=$(git hash-object -w "$GITEE_README") || exit 1
+  git update-index --add --cacheinfo "100644,${BLOB},README.md" || exit 1
+  git write-tree
+) >"$LOG" 2>&1 || { tail -6 "$LOG"; rm -f "$LOG" "$IDX"; die "构造 Gitee 提交树失败"; }
+TREE=$(tail -1 "$LOG")
+rm -f "$IDX"
+
+# 内容没变就别制造空提交
+REMOTE_TREE=$(git rev-parse "${PARENT}^{tree}" 2>/dev/null || true)
+if [ -n "$REMOTE_TREE" ] && [ "$REMOTE_TREE" = "$TREE" ]; then
+  ok "Gitee 已是最新（含 Gitee 版 README），无需推送"
+  rm -f "$LOG"
+else
+  MSG="$(git log -1 --pretty=%B HEAD)"
+  if [ -n "$PARENT" ]; then
+    COMMIT=$(printf '%s' "$MSG" | git commit-tree "$TREE" -p "$PARENT") || {
+      rm -f "$LOG"; die "创建 Gitee 提交失败"; }
+  else
+    COMMIT=$(printf '%s' "$MSG" | git commit-tree "$TREE") || {
+      rm -f "$LOG"; die "创建 Gitee 提交失败"; }
+  fi
+  if git -c "core.sshCommand=${SSH_CMD}" push gitee "${COMMIT}:refs/heads/main" >"$LOG" 2>&1; then
+    tail -3 "$LOG"
+    ok "已推送到 Gitee（README 为 Gitee 版）"
+  else
+    tail -8 "$LOG"
+    rm -f "$LOG"
+    die "推送失败。确认 Gitee 上已建好公开仓库 ${OWNER}/${REPO}"
+  fi
 fi
 rm -f "$LOG"
 

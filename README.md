@@ -1,6 +1,9 @@
 # tvbox-hub
 
-两个源，各管一件事。**电视上优先用 Gitee 地址**（推完立刻生效），jsDelivr 作备用。
+> 这是 **GitHub 主仓库**。Gitee 上有一份自动同步的镜像：<https://gitee.com/zlu1123/tvbox-hub>。
+> 两个平台各自维护一份 README（见 [README 维护](#readme-维护)），但配置由一条命令统一生成、提交、双推。
+
+两个源，各管一件事。**电视上优先用 Gitee raw 地址**（推完立刻生效），jsDelivr 作备用。
 
 | 填在哪 | 用哪个地址 | 说明 |
 |---|---|---|
@@ -8,17 +11,70 @@
 | **直播源**（提示「支持 txt、m3u」的框） | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.txt` | 38 个台 |
 | 同上，m3u 格式 | `https://gitee.com/zlu1123/tvbox-hub/raw/main/config/live.m3u` | 二选一 |
 
-jsDelivr 备用地址（把域名路径换成 `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/…` 即可），但它对 `@main` 分支有最长 **12 小时**解析缓存，改完配置不会立刻生效。
-
 > ⚠️ 别把 `index.json` 填进「直播源」框——那个框只认 txt / m3u，填 JSON 会提示「支持 txt、支持 m3u」并加载失败。反过来，`live.txt` 也别填进「接口」框。
 
 直播源现在是 **38 个实测可播、零广告**的频道（央视 9 + 卫视 15 + 地方 14）。影视源是空的，需要你填一个接口地址 —— 见 [影视源](#影视源搜电影剧集)。
 
-> 原始地址 `https://zlu1123.github.io/tvbox-hub/index.json` 也能用，但**只在 Android 7.1 以上的设备**。你这台小米电视是 Android 6.0.1，认不出 github.io 现在用的证书，会直接报「加载失败」。
+GitHub 备用地址：把域名路径换成 `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/…` 即可。但 jsDelivr 对 `@main` 有最长 **12 小时**解析缓存，改完配置不会立刻生效；想立刻生效用 `@<commit-sha>` 固定版本。
 
+> 原始地址 `https://zlu1123.github.io/tvbox-hub/index.json` 也能用，但**只在 Android 7.1 以上的设备**。你这台小米电视是 Android 6.0.1，认不出 github.io 现在用的证书，会直接报「加载失败」。
 
 ---
 
+## Gitee 镜像
+
+**为什么要它**：jsDelivr 会把 `@main` 的「分支 → commit」解析缓存最长 12 小时，`purge.jsdelivr.net` 只能清文件缓存、清不掉这层（实测过，三个节点都不变）。Gitee raw 没有这层缓存，推完立刻生效，国内也快。
+
+**证书也兼容**：`gitee.com` → `raw.giteeusercontent.com` 的链是
+`TrustAsia DV TLS RSA CA 2024 → TrustAsia TLS RSA Root CA → Certum Trusted Network CA`，
+最后一个根在你电视的 158 个证书里是有的（`ISRG Root X1` 没有，这才是 github.io 失败的原因）。raw 地址匿名可访问，会自动 302 到带签名的 CDN，不需要电视登录。
+
+### 一次性授权（维护者做，网页上操作）
+
+1. <https://gitee.com/profile/sshkeys> 添加本机公钥：
+
+   ```
+   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB171zlISrS+dxVRdncRAbKwV9YbLro7hBEfZtKP+Qor lukelzhang@lukedeMacBook-Pro.local
+   ```
+
+2. 在 Gitee 新建仓库 `tvbox-hub`，**不要**勾选「使用 Readme 文件初始化这个仓库」，并且**必须设为公开**——私有仓库的 raw 匿名访问会 403，电视上就是「加载失败」。设置页：<https://gitee.com/zlu1123/tvbox-hub/settings>。新账号可能要先实名认证，公开后可能有审核时间。
+
+3. 验证：
+
+   ```bash
+   ./scripts/push-gitee.sh --test    # 应显示 "Hi zlu1123! You've successfully authenticated"
+   ./scripts/push-gitee.sh --check  # 模拟电视匿名拉 index.json，返回 200 才算通
+   ```
+
+`--check` 是判断能不能用的唯一标准：**SSH 推送成功 ≠ 电视能读**，两者权限是分开的。
+
+> 本机 `~/.ssh/config` 的 `Host *` 写死了 `IdentityFile ~/.ssh/id_rsa`，会把 Gitee 上登记的 `id_ed25519` 挤掉（默认连接报 Permission denied）。脚本已显式 `ssh -i ~/.ssh/id_ed25519`，不改全局配置。
+
+---
+
+## README 维护
+
+两个平台看到的 README **不一样**，但公共正文只维护一处：
+
+```
+docs/readme/
+├── _common.md   ← 公共正文（电视怎么填 / 频道 / 影视源 / 刷新 / 排错 / 证书原理）
+├── github.md    ← GitHub 头部：主仓库说明 + 地址表 + 镜像授权章节
+└── gitee.md     ← Gitee 头部：镜像说明 + Gitee 地址表
+```
+
+`./scripts/gen-readme.sh` 把 `头部 + _common.md` 拼成两份：
+
+| 产物 | 去向 |
+|---|---|
+| `README.md`（仓库根目录） | 随常规提交推到 **GitHub** |
+| `.build/README.gitee.md` | 推送时由 `push-gitee.sh` 注入 **Gitee** 的 `README.md` |
+
+因为两边 `README.md` 内容不同，Gitee 的 `main` 与 GitHub 的 `main` 必然分叉，`push-gitee.sh` 每次会基于 Gitee 远端 HEAD 构造一个只替换 README 的提交（保持 fast-forward）。**不要手动 `git push gitee main`**，统一走 `./scripts/refresh.sh` 或 `./scripts/push-gitee.sh`。
+
+改公共内容只动 `_common.md`；改平台专属内容动对应的 `github.md` / `gitee.md`。改完跑一次 `./scripts/refresh.sh` 即可两边同步。
+
+---
 ## 电视上怎么填
 
 TVBox → **设置 → 配置地址**，粘上面表格里的地址 → 确定 → 重启 App。
@@ -107,62 +163,14 @@ https://xxx.com/api.php/provide/vod/?ac=list
 ./scripts/refresh.sh
 ```
 
-它会：抓清单 → 逐条探活（用你家网络，不是服务器）→ 剔除死链 → 校验 → 提交 → 推送。约 40 秒。
+它会：生成两份 README → 抓清单 → 逐条探活（用你家网络，不是服务器）→ 剔除死链 → 校验 → 提交 → **同时推送 GitHub 和 Gitee**。约 1 分钟。
 
 - `--no-probe` 跳过探活，3 秒出结果（但死链不会被剔除）
 - `--dry` 只生成不推送，先看看结果
 
-推上去后 GitHub Actions 自动发布，1 分钟内生效。
-
 > 国内网络下 `git push` 有时会报 `LibreSSL SSL_connect: SSL_ERROR_SYSCALL`，那是 TLS 握手被重置，不是仓库问题。`refresh.sh` 检测到就会自动改用 GitHub API 推送（`scripts/push-api.py`，走 api.github.com，通常能通）。
 
-> 为什么探活不在 GitHub 服务器上跑：它在美国机房，判定「能用」的流你国内可能拉不动。实测过一次，它给 22 个台，其中 4 个（北京卫视、广东卫视、CCTV-5+、CCTV-6）在你这儿是死的。
-
----
-
-## Gitee 镜像
-
-**为什么要它**：jsDelivr 会把 `@main` 的「分支 → commit」解析缓存最长 12 小时，`purge.jsdelivr.net` 只能清文件缓存、清不掉这层（实测过，三个节点都不变）。Gitee raw 没有这层缓存，推完立刻生效，国内也快。
-
-**证书也兼容**：`gitee.com` → `raw.giteeusercontent.com` 的链是
-`TrustAsia DV TLS RSA CA 2024 → TrustAsia TLS RSA Root CA → Certum Trusted Network CA`，
-最后一个根在你电视的 158 个证书里是有的（`ISRG Root X1` 没有，这才是 github.io 失败的原因）。raw 地址匿名可访问，会自动 302 到带签名的 CDN，不需要电视登录。
-
-### 一次性授权（需要你在网页上做，我代替不了）
-
-1. 打开 <https://gitee.com/profile/sshkeys>，添加本机公钥：
-
-   ```
-   ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIB171zlISrS+dxVRdncRAbKwV9YbLro7hBEfZtKP+Qor lukelzhang@lukedeMacBook-Pro.local
-   ```
-
-2. 在 <https://gitee.com/projects/new> 新建仓库，名字填 `tvbox-hub`，**不要**勾选「使用 Readme 文件初始化这个仓库」。
-   **并且必须设为「公开」** —— 私有仓库的 raw 地址匿名访问会返回 403，电视上就是「加载失败」。
-   在 <https://gitee.com/zlu1123/tvbox-hub/settings> 里可以检查/修改。新账号可能要先实名认证，公开后也可能有一段审核时间。
-
-3. 验证并推送：
-
-   ```bash
-   ./scripts/push-gitee.sh --test    # 应显示 "Hi zlu1123! You've successfully authenticated"
-   ./scripts/push-gitee.sh           # 推送当前 main，并自动自检 raw
-   ./scripts/push-gitee.sh --check  # 只自检电视端 raw 能否匿名访问
-   ```
-
-`--check` 是判断能不能用的唯一标准：它模拟电视不登录、匿名拉 `index.json`，返回 200 且能解析出 `lives` 才算通。**SSH 推送成功 ≠ 电视能读**，两者权限是分开的。
-
-> 本机 `~/.ssh/config` 的 `Host *` 写死了 `IdentityFile ~/.ssh/id_rsa`，会把 Gitee 上登记的 `id_ed25519` 挤掉（默认连接报 Permission denied）。脚本已显式 `ssh -i ~/.ssh/id_ed25519`，不改你的全局配置。
-
-`gitee` remote 已经配好了。授权完成后，`./scripts/refresh.sh` 每次会自动双推 GitHub + Gitee，Gitee 推不上去只会警告、不影响主线。
-
-### 想立刻用新版、又不想等授权
-
-用 commit 固定的 jsDelivr 地址（分支解析缓存对 `@<commit-sha>` 无效）：
-
-```
-https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@7440417fa89b45f7bb4afed9773e23ff9988e18c/config/index.json
-```
-
-缺点很明显：每次更新都得换一串 SHA。所以还是把 Gitee 配上省事。
+> 为什么探活不在 CI 服务器上跑：它在境外机房，判定「能用」的流你国内可能拉不动。实测过一次，它给 22 个台，其中 4 个（北京卫视、广东卫视、CCTV-5+、CCTV-6）在你这儿是死的。
 
 ---
 
@@ -177,11 +185,16 @@ config/
 ├── live.m3u       ← 生成物：纯直播 M3U（直播源框）
 ├── vod.json       ← 生成物：纯影视
 └── health.json    ← 生成物：探活报告，看哪个台死了
+docs/readme/       ← README 源文件（公共正文 + 两个平台头部）
+├── _common.md
+├── github.md
+└── gitee.md
 scripts/
 ├── refresh.sh     ← 改完配置跑这个（自动双推）
+├── gen-readme.sh  ← 拼装两份 README
 ├── build.py       ← 抓清单 / 探活 / 生成
 ├── check.py       ← 配置体检
-├── push-gitee.sh  ← Gitee 镜像授权检测 + 推送
+├── push-gitee.sh  ← Gitee 镜像推送 + raw 自检
 ├── push-api.py    ← github.com 被阻断时用 API 推送兜底
 └── install_tv.sh  ← 装 App / 重装 / 启动电视
 nas/               ← 可选，接自己媒体库时才用
@@ -207,8 +220,7 @@ docs/              ← 安装细节、配置字段
 ## 常常出问题的地方
 
 **电视提示配置获取失败**
-先用手机浏览器打开那个地址，能下到 JSON 就说明地址没问题，是电视网络的事。
-GitHub Pages 在国内偶尔抽风，等一会儿重试，或在地址前加 `https://ghproxy.net/` 前缀。
+先用手机浏览器打开那个地址，能下到 JSON 就说明地址没问题，是电视网络的事。如果地址是 `gitee.com/.../raw/...`，还要确认仓库是**公开**的（私有仓库匿名访问会 403）。
 
 **直播能看但点播搜不到**
 `vod.sites` 是空的。填接口，见上面。
@@ -218,7 +230,7 @@ GitHub Pages 在国内偶尔抽风，等一会儿重试，或在地址前加 `ht
 
 **改了配置电视没变化**
 TVBox 有缓存。设置里「清空缓存」或杀掉 App 重开。
-如果用的是 jsDelivr `@main` 地址，它还有最长 12 小时的分支解析缓存（purge 清不掉）——换成 Gitee raw 地址就没这问题，或用 README 里的 commit 固定地址立刻生效。
+如果用的是 jsDelivr `@main` 地址，它还有最长 12 小时的分支解析缓存（purge 清不掉）——换成 Gitee raw 地址就没这问题，或用 commit 固定的 jsDelivr 地址立刻生效。
 
 ---
 
@@ -244,6 +256,3 @@ Certum Trusted Network CA            ✓ 在   ← Gitee 能通
 | **`gitee.com/…/raw/main`** | → Certum Trusted Network CA | ✓ | ✓ **无** |
 
 其他同一问题下的废案，实测都走 ISRG 链，一样不通：`raw.githubusercontent.com`。`statically.io` 在你家网络直接连不上。
-
-所以最终推荐 Gitee raw：证书认、无缓存、国内快。代价只是首次要在网页上加一把 SSH 公钥。
-

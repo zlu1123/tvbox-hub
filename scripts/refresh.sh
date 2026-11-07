@@ -6,8 +6,12 @@
 #  它判定"活着"的流，你在国内可能拉不动；反之亦然。所以探活这一步放在你
 #  自己的网络里做，CI 只负责把结果发布出去。
 #
+#  一次跑完做五件事：同步远端 → 拼装两份 README → 构建配置 → 体检 →
+#  整体提交并双推（GitHub 主仓库 + Gitee 镜像，后者自动注入 Gitee 版 README）。
+#  改 docs/readme/ 下的 README 源文件后，同样跑这个命令即可两边同步。
+#
 #  用法：
-#    ./scripts/refresh.sh              # 探活 + 提交 + 推送
+#    ./scripts/refresh.sh              # 探活 + 整体提交 + 双推
 #    ./scripts/refresh.sh --no-probe   # 不探活，只重新抓清单（很快）
 #    ./scripts/refresh.sh --dry        # 只看结果，不提交不推送
 # =============================================================================
@@ -37,7 +41,7 @@ python3 -c "import yaml" 2>/dev/null || {
 }
 
 # ---------------------------------------------------------------------------
-step "1/4 同步远端"
+step "1/5 同步远端"
 
 # 上次可能用 API 推的，本地 SHA 和远端不一致，先对齐再动手。
 # 拉不动不影响后续（离线也能生成配置），只是推送时可能被拒。
@@ -53,10 +57,14 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-step "2/4 构建配置"
+step "2/5 生成两份 README"
+# 必须在 pull 之后：远端可能刚更新过 docs/readme/ 源文件
+./scripts/gen-readme.sh || die "README 生成失败"
+
+step "3/5 构建配置"
 python3 scripts/build.py $NO_PROBE || die "构建失败"
 
-step "3/4 配置体检"
+step "4/5 配置体检"
 python3 scripts/check.py
 CHECK=$?
 if [ "$CHECK" -ne 0 ]; then
@@ -69,14 +77,15 @@ if [ "$DRY" -eq 1 ]; then
 fi
 
 # ---------------------------------------------------------------------------
-step "4/4 提交并推送"
+step "5/5 整体提交并双推"
 
-if [ -z "$(git status --porcelain config/)" ]; then
-  ok "配置无变化，无需推送"
+# 整体提交：配置、README 源文件、脚本改动一起进同一个 commit
+if [ -z "$(git status --porcelain)" ]; then
+  ok "无变化，无需推送"
   exit 0
 fi
 
-git add config/
+git add -A
 git -c user.name="$(git config user.name || echo tvbox)" \
     -c user.email="$(git config user.email || echo tvbox@local)" \
     commit -q -m "chore: 本地探活刷新 $(date '+%Y-%m-%d %H:%M')"
@@ -102,16 +111,15 @@ if [ "$PUSHED" -eq 1 ]; then
   SLUG=$(git remote get-url origin | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?#\1#')
   ok "已推送 GitHub"
 
-  # 顺手推 Gitee（配了 remote 才推，失败不影响 GitHub 这条主线）。
-  # Gitee raw 没有 jsDelivr 那种 12 小时分支缓存，电视用它的地址能立刻生效。
+  # Gitee 镜像：push-gitee.sh 会把 Gitee 版 README 注入提交树
+  # （两边 README 不同，main 必然分叉，脚本自动保持 fast-forward）。
+  # 失败只警告，不影响 GitHub 这条主线。
   if git remote get-url gitee >/dev/null 2>&1; then
-    # 显式指定密钥：本机 ~/.ssh/config 的 Host * 会把 id_ed25519 挤掉
-    GITEE_SSH="ssh -i ${GITEE_SSH_KEY:-$HOME/.ssh/id_ed25519} -o IdentitiesOnly=yes"
-    if git -c "core.sshCommand=${GITEE_SSH}" push gitee main >/dev/null 2>&1; then
-      ok "已同步 Gitee 镜像（推完立即生效）"
+    if ./scripts/push-gitee.sh >/dev/null 2>&1; then
+      ok "已同步 Gitee 镜像（含 Gitee 版 README，推完立即生效）"
     else
-      warn "Gitee 镜像没推上去（授权或仓库还没建好），不影响 GitHub"
-      warn "授权指引：./scripts/push-gitee.sh --test"
+      warn "Gitee 镜像没推上去，不影响 GitHub"
+      warn "诊断：./scripts/push-gitee.sh --test / --check"
     fi
   fi
 
