@@ -81,7 +81,7 @@ cd tvbox-hub
 2. 首次启动会要求填「配置地址」，或者在 设置 → 配置地址 里填：
 
    ```
-   https://zlu1123.github.io/tvbox-hub/index.json
+   https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/index.json
    ```
 
 3. 确定 → 返回首页 → 等它拉取配置（右上角会有进度）

@@ -1,14 +1,17 @@
 # tvbox-hub
 
-两个源，各管一件事，都托管在 GitHub Pages 上：
+两个源，各管一件事。**电视上请用 jsDelivr 地址**（下面表格第一行），原因见文末。
 
-| 用途 | 地址 | 填在哪 |
+| 用途 | 电视填这个地址 | 填在哪 |
 |---|---|---|
-| 直播（看电视） | `https://zlu1123.github.io/tvbox-hub/live.json` | TVBox 的「直播源」 |
-| 影视（搜电影剧集） | `https://zlu1123.github.io/tvbox-hub/vod.json` | TVBox / 影视仓 的「接口」 |
-| 两个都要 | `https://zlu1123.github.io/tvbox-hub/index.json` | 只有一个配置框时填这个 |
+| 直播 | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.json` | 「直播源」 |
+| 影视 | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/vod.json` | 「接口」 |
+| 两个都要 | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/index.json` | 只有一个配置框时填这个 |
 
 直播源已经在跑，19 个台（CCTV 系 + 卫视）实测可播。影视源现在是空的，需要你填一个接口地址 —— 见 [影视源](#影视源搜电影剧集)。
+
+> 原始地址 `https://zlu1123.github.io/tvbox-hub/index.json` 也能用，但**只在 Android 7.1 以上的设备**。你这台小米电视是 Android 6.0.1，认不出 github.io 现在用的证书，会直接报「加载失败」。
+
 
 ---
 
@@ -149,3 +152,28 @@ GitHub Pages 在国内偶尔抽风，等一会儿重试，或在地址前加 `ht
 
 **改了配置电视没变化**
 TVBox 有缓存。设置里「清空缓存」或杀掉 App 重开。
+jsDelivr 那边还会再缓存一层，`./scripts/refresh.sh` 推完会自动刷新它的缓存。
+
+---
+
+## 为什么电视要用 jsDelivr 而不是 github.io
+
+不是随便挑的，是查出来的。
+
+你这台小米电视4 是 **Android 6.0.1**，系统信任库只有 158 个根证书。查过：
+
+```
+ISRG Root X1（Let's Encrypt）        ✗ 不在
+DigiCert Global Root CA              ✓ 在
+Baltimore CyberTrust Root            ✓ 在
+GlobalSign Root CA - R3              ✓ 在
+```
+
+GitHub Pages（`*.github.io`）现在用 Let's Encrypt 签发，证书链是 `YR1 → Root YR → ISRG Root X1`，根证书你的电视不认，所以 TLS 握手必然失败 —— 表现就是「加载失败」，跟配置内容对不对没关系。
+
+jsDelivr（`cdn.jsdelivr.net`）走的是 `GlobalSign Atlas R46 → GlobalSign Root R3`，这条链你的电视认，所以能通。
+
+其他同一问题下的废案，实测都走 ISRG 链，一样不通：`raw.githubusercontent.com`。
+
+代价是 jsDelivr 对 `@main` 分支有缓存，改完配置要刷新一下，`refresh.sh` 已经自动做了。
+

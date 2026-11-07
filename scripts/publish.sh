@@ -118,7 +118,7 @@ else
   fi
 fi
 
-URL="https://$OWNER.github.io/$REPO_NAME/index.json"
+URL="https://cdn.jsdelivr.net/gh/$OWNER/$REPO_NAME@main/config/index.json"
 printf '\n%s\n' "────────────────────────────────────────────"
 say "配置地址（填到电视上）："
 printf '  %s%s%s\n' "$GRN" "$URL" "$RST"

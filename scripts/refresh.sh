@@ -99,10 +99,21 @@ fi
 rm -f "$LOG"
 
 if [ "$PUSHED" -eq 1 ]; then
-  ok "已推送，等 1 分钟 Actions 发布完成"
-  CONFIG_URL=$(git remote get-url origin \
-    | sed -E 's#.*github\.com[:/]([^/]+)/([^/.]+)(\.git)?#https://\1.github.io/\2/index.json#')
-  printf '\n配置地址：%s%s%s\n' "$GRN" "$CONFIG_URL" "$RST"
+  SLUG=$(git remote get-url origin | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?#\1#')
+  ok "已推送"
+
+  # jsDelivr 对 @main 分支有缓存（最长 12 小时），不刷的话电视看到的还是旧配置。
+  # 它直接读 git 仓库，不依赖 Pages，所以推完刷一下立即可用。
+  PURGED=0
+  for f in index live vod; do
+    curl -sS -m 20 "https://purge.jsdelivr.net/gh/$SLUG@main/config/$f.json" >/dev/null 2>&1 && PURGED=$((PURGED + 1))
+  done
+  [ "$PURGED" -gt 0 ] && ok "已刷新 CDN 缓存（$PURGED 个文件）" \
+                      || warn "CDN 缓存刷新失败，电视可能延迟几小时才生效"
+
+  printf '\n电视上填这个地址：\n  %shttps://cdn.jsdelivr.net/gh/%s@main/config/index.json%s\n' \
+    "$GRN" "$SLUG" "$RST"
+  printf '%s（纯直播用 …/live.json，纯影视用 …/vod.json）%s\n' "$DIM" "$RST"
 else
   die "推送失败。git 和 API 都没通，检查网络后重试"
 fi
