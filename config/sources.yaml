@@ -9,6 +9,18 @@ meta:
   version: "1.0.0"
 
 # ------------------------------------------------------------
+# 发布地址（只影响 index.json 里 lives.url 指向哪里）
+# ------------------------------------------------------------
+publish:
+  # 电视拉直播清单的入口。用 jsDelivr 的 GitHub 源：证书是 GlobalSign，
+  # Android 6 的老电视认；无 302。
+  #
+  # 不要换成 https://gitee.com/.../raw/... ——Gitee 现在会 302 跳到
+  # raw.giteeusercontent.com，而这个域名 CNAME 到 *.baiduads.com，
+  # 部分电视 / 路由器 DNS 会把它当广告域名拦掉，表现就是一直 loading。
+  live_m3u: "https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.m3u"
+
+# ------------------------------------------------------------
 # 直播源
 # ------------------------------------------------------------
 live:
@@ -203,22 +215,22 @@ vod:
     - key: "ffzy"
       name: "非凡资源"
       type: 1
-      api: "http://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/"
+      api: "https://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/"
       searchable: 1
       quickSearch: 1
       filterable: 1
       ext: ""
-      _note: "http 接口 + Certum 播放域名，约 9.9 万条，响应 0.4s"
+      _note: "接口与播放域名都走 https，约 9.9 万条，响应 0.4s"
 
     - key: "dytt"
       name: "电影天堂"
       type: 1
-      api: "http://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/"
+      api: "https://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/"
       searchable: 1
       quickSearch: 1
       filterable: 1
       ext: ""
-      _note: "http 接口 + Certum 播放域名，约 8.5 万条，响应 0.4s"
+      _note: "接口与播放域名都走 https，约 8.5 万条，响应 0.4s"
 
     - key: "360zy"
       name: "360资源"
@@ -233,27 +245,27 @@ vod:
     - key: "lziapi"
       name: "量子资源"
       type: 1
-      api: "http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/"
+      api: "https://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/"
       searchable: 1
       quickSearch: 1
       filterable: 1
       ext: ""
-      _note: "片库最大之一（约 16.3 万条），响应 0.3s；播放域名是 Let's Encrypt"
+      _note: "片库最大之一（约 16.3 万条），响应 0.3s；接口 https 可用"
 
     - key: "bfzy"
       name: "暴风资源"
       type: 1
-      api: "http://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/"
+      api: "https://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/"
       searchable: 1
       quickSearch: 1
       filterable: 1
       ext: ""
-      _note: "片库最大（约 17.1 万条）；已用 http 绕开接口的 LE 证书"
+      _note: "片库最大（约 17.1 万条），接口 https 可直连"
 
     - key: "modu"
       name: "魔都资源"
       type: 1
-      api: "http://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/"
+      api: "https://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/"
       searchable: 1
       quickSearch: 0          # 实测 8.6s，不放进全局快捷搜索拖慢聚合
       filterable: 1

@@ -642,20 +642,37 @@ def collect_vod(cfg, do_probe=True, verbose=True):
 
 
 def build_index(cfg, lives, version, sites=None):
+    """组装电视端真正要读的那份配置。
+
+    这里有两个踩过的坑，别再改回去：
+
+    1. lives 必须是 [{"name": "...", "url": "..."}]。TVBox / 影视仓 的 Live
+       模型里只有 name / url / epg / logo / ua / timeZone，没有 group /
+       channels。把内部数据结构直接写进去，App 拿到的 url 是 null，配置
+       加载回调永远不返回，界面就停在 loading 转圈。
+    2. 顶层 spider / doh / ijk / wallpaper 全部不写。spider 为空串时部分
+       影视仓版本会拿空地址去下载；doh 里塞 Google 会在国内把域名解析拖死。
+       只保留各家都认的最小字段集，兼容性最好。
+    """
     player = cfg.get("player", {})
-    idx = {
+    live_url = str((cfg.get("publish") or {}).get("live_m3u") or "").strip()
+
+    def clean(items):
+        # _note 这类内部备注不能漏进电视配置
+        return [{k: v for k, v in s.items() if not str(k).startswith("_")}
+                for s in (items or []) if isinstance(s, dict)]
+
+    if sites is None:
+        sites = cfg.get("vod", {}).get("sites", [])
+
+    return {
         "name": cfg.get("meta", {}).get("name", "TVBox 源"),
         "version": version,
-        "wallpaper": "",
-        "spider": "",
-        "sites": sites if sites is not None else cfg.get("vod", {}).get("sites", []),
-        "lives": lives,
+        "sites": clean(sites),
+        "lives": [{"name": "直播", "url": live_url}] if live_url else [],
         "parses": player.get("parses", []),
         "flags": player.get("flags", []),
-        "ijk": player.get("ijk", []),
-        "doh": player.get("doh", []),
     }
-    return idx
 
 
 def bump_version(old):
@@ -706,8 +723,9 @@ def main():
     with open(idx_path, "w", encoding="utf-8") as f:
         json.dump(index, f, ensure_ascii=False, indent=2)
 
-    # live.json —— 纯直播源，单独填「直播源 / EPG 地址」用
-    live_only = dict(index, name=index["name"] + " - 直播", sites=[], lives=lives)
+    # live.json —— 纯直播源，单独填「直播源 / EPG 地址」用。
+    # lives 直接沿用 index 里已经转好的 {name, url} 形式，别再塞内部结构。
+    live_only = dict(index, name=index["name"] + " - 直播", sites=[])
     with open(os.path.join(OUT_DIR, "live.json"), "w", encoding="utf-8") as f:
         json.dump(live_only, f, ensure_ascii=False, indent=2)
 

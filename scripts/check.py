@@ -99,20 +99,27 @@ def check_structure(idx):
     else:
         warn("index.json 里没有影视站点；若候选池有接口，看 vod-health.json 是不是全被判死了")
 
+    # lives 必须是 TVBox / 影视仓 认的 {name, url} 形式。写成内部的
+    # group/channels 结构，App 取不到 url，配置加载会一直卡在 loading。
     lives = idx.get("lives") or []
-    total_ch = 0
+    if not isinstance(lives, list):
+        err("lives 必须是数组")
+        lives = []
     for g in lives:
-        if "group" not in g or "channels" not in g:
-            err(f"lives 分组缺少 group/channels：{g.get('group', '?')}")
+        if not isinstance(g, dict):
+            err(f"lives 项不是对象：{g!r}")
             continue
-        for c in g["channels"]:
-            total_ch += 1
-            if not c.get("name") or not c.get("urls"):
-                err(f"频道 {c.get('name', '?')} 缺少 name 或 urls")
-            for u in c.get("urls", []):
-                if not str(u).startswith(("http://", "https://", "rtmp://", "rtsp://")):
-                    err(f"频道 {c['name']} 地址协议非法：{u}")
-    ok(f"{len(lives)} 个直播分组 / {total_ch} 个频道")
+        name = g.get("name")
+        u = str(g.get("url") or "")
+        if not name:
+            err("lives 项缺少 name")
+        if not u:
+            err(f"直播源「{name or '?'}」缺少 url —— lives 只认 {{name, url}}，"
+                f"写成 group/channels 会让电视一直 loading")
+        elif not u.startswith(("http://", "https://")):
+            err(f"直播源「{name}」url 协议非法：{u}")
+    names = "、".join(str(g.get("name")) for g in lives if isinstance(g, dict))
+    ok(f"{len(lives)} 个直播源（url 形式）：{names or '无'}")
 
 
 def check_vod_health():
@@ -178,7 +185,10 @@ def check_health():
 def check_artifacts(idx):
     print("\n[4/4] 产物一致性")
     ver = idx.get("version")
-    expect_ch = sum(len(g.get("channels", [])) for g in idx.get("lives", []))
+    # 频道数以 live.txt 为准（index.json 里只放了一个 m3u 入口）
+    txt = os.path.join(CONFIG, "live.txt")
+    m3u = os.path.join(CONFIG, "live.m3u")
+    expect_ch = 0
 
     for fn, want_sites, want_lives in (("vod.json", True, False),
                                        ("live.json", False, True)):
@@ -199,20 +209,17 @@ def check_artifacts(idx):
         if want_lives and d.get("sites"):
             err(f"{fn} 不该带 sites")
 
-    txt = os.path.join(CONFIG, "live.txt")
-    m3u = os.path.join(CONFIG, "live.m3u")
     if os.path.exists(txt):
         lines = [l for l in open(txt, encoding="utf-8").read().splitlines() if l.strip()]
         ch = [l for l in lines if "," in l and not l.endswith(",#genre#")]
-        if len(ch) != expect_ch:
-            err(f"live.txt 有 {len(ch)} 个频道，index.json 里是 {expect_ch} 个")
+        expect_ch = len(ch)
     else:
         err("缺少 live.txt")
     if os.path.exists(m3u):
         n = sum(1 for l in open(m3u, encoding="utf-8").read().splitlines()
                 if l.startswith("#EXTINF"))
         if n != expect_ch:
-            err(f"live.m3u 有 {n} 个频道，index.json 里是 {expect_ch} 个")
+            err(f"live.m3u 有 {n} 个频道，live.txt 里是 {expect_ch} 个")
     else:
         err("缺少 live.m3u")
     ok(f"index / vod / live / txt / m3u 版本 {ver}、{expect_ch} 个频道对齐")

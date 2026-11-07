@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-07T17:06:22+08:00",
+  "generated_at": "2026-11-07T17:55:41+08:00",
   "probed": true,
   "summary": {
     "channels_total": 79,
@@ -15,8 +15,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "HTTP 404",
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "广告跳转"
       ]
     },
     {
@@ -132,10 +132,12 @@
     {
       "name": "广州台",
       "group": "其他",
-      "status": "ok",
+      "status": "dead",
       "lines_total": 1,
-      "lines_alive": 1,
-      "errors": []
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
     },
     {
       "name": "广西综艺旅游频道",
@@ -313,8 +315,9 @@
       "group": "卫视",
       "status": "partial",
       "lines_total": 3,
-      "lines_alive": 2,
+      "lines_alive": 1,
       "errors": [
+        "广告跳转",
         "非有效 m3u8"
       ]
     },
@@ -547,12 +550,11 @@
     {
       "name": "陕西卫视",
       "group": "卫视",
-      "status": "dead",
+      "status": "partial",
       "lines_total": 2,
-      "lines_alive": 0,
+      "lines_alive": 1,
       "errors": [
-        "URLError",
-        "广告跳转"
+        "URLError"
       ]
     },
     {
@@ -592,10 +594,9 @@
       "group": "央视",
       "status": "partial",
       "lines_total": 3,
-      "lines_alive": 1,
+      "lines_alive": 2,
       "errors": [
-        "HTTP 403",
-        "广告跳转"
+        "HTTP 403"
       ]
     },
     {
@@ -657,7 +658,7 @@
       "errors": [
         "HTTP 403",
         "RemoteDisconnected",
-        "超时"
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -728,7 +729,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "广告跳转"
       ]
     },
     {
@@ -749,8 +751,7 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
-        "广告跳转"
+        "RemoteDisconnected"
       ]
     },
     {
@@ -779,8 +780,7 @@
       "lines_alive": 0,
       "errors": [
         "HTTP 403",
-        "URLError",
-        "超时"
+        "URLError"
       ]
     },
     {

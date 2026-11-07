@@ -1,14 +1,12 @@
 {
   "name": "我的 TVBox 源 - 影视",
-  "version": "1.0.32",
-  "wallpaper": "",
-  "spider": "",
+  "version": "1.0.34",
   "sites": [
     {
       "key": "ffzy",
       "name": "非凡资源",
       "type": 1,
-      "api": "http://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/",
+      "api": "https://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1,
@@ -18,7 +16,7 @@
       "key": "dytt",
       "name": "电影天堂",
       "type": 1,
-      "api": "http://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/",
+      "api": "https://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1,
@@ -38,7 +36,7 @@
       "key": "lziapi",
       "name": "量子资源",
       "type": 1,
-      "api": "http://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/",
+      "api": "https://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1,
@@ -48,7 +46,7 @@
       "key": "bfzy",
       "name": "暴风资源",
       "type": 1,
-      "api": "http://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/",
+      "api": "https://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/",
       "searchable": 1,
       "quickSearch": 1,
       "filterable": 1,
@@ -58,7 +56,7 @@
       "key": "modu",
       "name": "魔都资源",
       "type": 1,
-      "api": "http://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/",
+      "api": "https://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/",
       "searchable": 1,
       "quickSearch": 0,
       "filterable": 1,
@@ -79,55 +77,5 @@
     "mgtv",
     "wasu",
     "bilibili"
-  ],
-  "ijk": [
-    {
-      "group": "软解码",
-      "options": [
-        {
-          "category": 4,
-          "name": "opensles",
-          "value": "0"
-        },
-        {
-          "category": 4,
-          "name": "framedrop",
-          "value": "1"
-        }
-      ]
-    },
-    {
-      "group": "硬解码",
-      "options": [
-        {
-          "category": 4,
-          "name": "mediacodec",
-          "value": "1"
-        },
-        {
-          "category": 4,
-          "name": "framedrop",
-          "value": "1"
-        }
-      ]
-    }
-  ],
-  "doh": [
-    {
-      "name": "Google",
-      "url": "https://dns.google/dns-query",
-      "ips": [
-        "8.8.4.4",
-        "8.8.8.8"
-      ]
-    },
-    {
-      "name": "AliDNS",
-      "url": "https://dns.alidns.com/dns-query",
-      "ips": [
-        "223.5.5.5",
-        "223.6.6.6"
-      ]
-    }
   ]
 }
