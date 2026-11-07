@@ -101,6 +101,12 @@ else
   if python3 scripts/push-api.py >"$LOG" 2>&1; then
     tail -3 "$LOG"
     PUSHED=1
+    # API 推送创建的 commit 与本地内容相同但 SHA 不同。对齐一下，
+    # 否则下次开头的 pull --rebase 会把等价提交重放一遍甚至起冲突。
+    if git fetch origin main -q 2>/dev/null; then
+      git reset --hard origin/main -q 2>/dev/null \
+        && ok "已对齐远端引用（API 推送产生的等价分叉）"
+    fi
   else
     tail -6 "$LOG"
   fi
