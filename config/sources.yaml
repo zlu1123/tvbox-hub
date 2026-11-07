@@ -27,19 +27,24 @@ live:
     #   url: "https://raw.githubusercontent.com/<你>/tvbox-hub/main/config/my_live.m3u"
     #   trust: true
 
-  # 只保留频道名命中这些正则的条目（不区分大小写）
-  # 注意：这里匹配的是「映射成中文之后」的名字，所以下面的 name_map 是前提
-  include:
-    - "^CCTV-\\d+"
-    - "卫视"
-    - "^CGTN|^CETV"
+  # 频道筛选。留空 = 全收，靠探活来淘汰不能播的。
+  # 之前的教训：按台名白名单筛出来的 CCTV 系 15 个台，直连实测一个都播不了
+  # （那些流只在境外可达），白名单只会把真正能看的频道挤掉。
+  include: []
 
   # 命中以下正则的条目直接丢弃
   exclude:
-    - "Not 24/7"
+    - "Not 24/7"                 # 不是全天播的，半天黑屏
     - "Geo-blocked"
-    - "购物|Shopping|HomePlus"
-    - "CCTV\\+\\s?\\d"      # CCTV+ 是海外商业频道，不是央视
+    - "购物|Shopping|HomePlus|Fengshang"
+    - "CCTV\\+\\s?\\d"           # CCTV+ 是海外商业频道，不是央视
+    - "VoA|Voice of America|BRICS"
+    - "ABN|Angel TV|Bread TV|Ando TV|High Channel TV"
+
+  # 上游清单里整个分组不要的，写分组名（对应 m3u 的 group-title）
+  exclude_groups:
+    - Religious
+    - Shopping
 
   # ----------------------------------------------------------
   # 英文台名 → 中文台名
@@ -90,6 +95,23 @@ live:
     "Yanbian Satellite TV": "延边卫视"
     "Yunnan Satellite TV": "云南卫视"
     "Zhejiang Satellite TV": "浙江卫视"
+    # —— 地方台（探活筛出来的能播的）——
+    "Chaozhou Public Channel": "潮州公共频道"
+    "Chifeng Comprehensive News Chanel": "赤峰综合新闻频道"
+    "Dongguan Comprehensive News Channel": "东莞综合新闻频道"
+    "Guangxi Variety & Travel Channel": "广西综艺旅游频道"
+    "Guangzhou TV": "广州台"
+    "Harbin Comprehensive News Channel": "哈尔滨新闻综合频道"
+    "Harbin Movie Channel": "哈尔滨电影频道"
+    "Hunan Economy Channel": "湖南经视频道"
+    "Jingmen Comprehensive News Channel": "荆门综合新闻频道"
+    "Kangba TV": "康巴卫视"
+    "Lanzhou Comprehensive News Channel": "兰州新闻综合频道"
+    "Lanzhou Culture & Tourism Channel": "兰州文旅频道"
+    "Xizang TV Tibetan": "西藏卫视藏语"
+    "Yichang Sanxia General Channel": "宜昌三峡综合频道"
+    "Yichang Sanxia Travel & Life Channel": "宜昌三峡旅游生活"
+    "Zhejiang International Channel": "浙江国际频道"
 
   # 频道名清洗后作为唯一键，同一频道多个地址会合并成多线路（TVBox 自动容错切换）
   max_lines_per_channel: 4

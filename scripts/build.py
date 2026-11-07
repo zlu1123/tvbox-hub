@@ -39,6 +39,12 @@ OUT_DIR = os.path.join(ROOT, "config")
 UA = "okhttp/3.12.0"
 ANSI = {"g": "\033[32m", "y": "\033[33m", "r": "\033[31m", "d": "\033[2m", "0": "\033[0m"}
 
+# 强制直连：探活要模拟的是「电视所在的网络」，如果走系统代理（比如本机
+# 挂着 HTTP_PROXY），测出来的可用性就不是电视的真实情况。
+# 实测教训：走代理时 44 条全通，直连只剩 6 条能播。
+DIRECT_OPENER = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+urllib.request.install_opener(DIRECT_OPENER)
+
 
 def color(s, c):
     return f"{ANSI[c]}{s}{ANSI['0']}" if sys.stdout.isatty() else str(s)
@@ -67,11 +73,33 @@ def http_get(url, timeout=20, retries=2):
     raise RuntimeError(f"抓取失败 {url}: {last}")
 
 
-EXTINF_RE = re.compile(r'#EXTINF:\s*(-?\d+(?:\.\d+)?)\s*(.*?),(.*)$')
+EXTINF_RE = re.compile(r'#EXTINF:\s*(-?\d+(?:\.\d+)?)\s*(.*?),(.*)$', re.S)  # 保留兼容，解析已改用 _split_outside_quotes
 
 
 def _attrs(s):
     return dict(re.findall(r'([\w-]+)="([^"]*)"', s))
+
+
+def _split_outside_quotes(s):
+    """按逗号切分，但忽略引号里的逗号。
+    EXTINF 的属性值里经常有逗号（比如解析器把 UA 字符串塞进 tvg-name），
+    天真地 split(',') 会把台名截断成半截。"""
+    parts, buf, q = [], [], None
+    for ch in s:
+        if q:
+            buf.append(ch)
+            if ch == q:
+                q = None
+        elif ch in ('"', "'"):
+            q = ch
+            buf.append(ch)
+        elif ch == ",":
+            parts.append("".join(buf))
+            buf = []
+        else:
+            buf.append(ch)
+    parts.append("".join(buf))
+    return parts
 
 
 def parse_playlist(text, base=""):
@@ -84,17 +112,16 @@ def parse_playlist(text, base=""):
         cur = None
         for line in lines:
             if line.upper().startswith("#EXTINF"):
-                m = EXTINF_RE.match(line)
-                if not m:
-                    cur = None
-                    continue
-                attr_str, title = m.group(2), m.group(3).strip()
-                a = _attrs(attr_str)
+                body = line[len("#EXTINF:"):].strip()
+                parts = _split_outside_quotes(body)
+                attrs_part = parts[0] if parts else ""
+                title = ",".join(parts[1:]).strip() if len(parts) > 1 else ""
+                a = _attrs(attrs_part)
                 cur = {
                     "name": title,
                     "group": a.get("group-title", ""),
                     "logo": a.get("tvg-logo", ""),
-                    "raw_attr": attr_str,
+                    "raw_attr": attrs_part,
                 }
             elif line.startswith("#"):
                 continue
@@ -176,29 +203,59 @@ def cctv_sort_key(name):
 # --------------------------------------------------------------------------
 # 探活
 # --------------------------------------------------------------------------
-def probe_one(url, timeout=8, retries=2):
-    """拉取 .m3u8 校验内容；非 m3u8 只校验 HTTP 状态"""
-    last_err = ""
-    for _ in range(retries):
-        try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
-            with urllib.request.urlopen(req, timeout=timeout) as r:
-                if r.status >= 400:
-                    last_err = f"HTTP {r.status}"
-                    continue
-                head = r.read(4096)
-            if url.split("?")[0].lower().endswith((".m3u8", ".m3u")):
-                if b"#EXTM3U" not in head:
-                    last_err = "非有效 m3u8"
-                    continue
-            return True, ""
-        except urllib.error.HTTPError as e:
-            last_err = f"HTTP {e.code}"
-        except (socket.timeout, TimeoutError):
-            last_err = "超时"
-        except Exception as e:  # noqa: BLE001
-            last_err = type(e).__name__
-        time.sleep(0.5)
+def _probe_once(url, timeout=8):
+    """单次深度探活：验清单 + 拉真实视频分片"""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": UA})
+        with urllib.request.urlopen(req, timeout=timeout) as r:
+            final_url = r.geturl()
+            head = r.read(16384).decode("utf-8", "ignore")
+
+        lower = final_url.split("?")[0].lower()
+        if not lower.endswith((".m3u8", ".m3u")):
+            return True, ""          # 非清单类（直链 ts/flv 等），能连上就算活
+
+        if "#EXTM3U" not in head.upper():
+            return False, "非有效 m3u8"
+
+        # 取清单里第一条真实地址（可能是分片，也可能是子清单）
+        seg = next((l.strip() for l in head.splitlines()
+                    if l.strip() and not l.strip().startswith("#")), "")
+        if not seg:
+            return False, "清单里没有分片"
+
+        if not re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*://", seg):
+            from urllib.parse import urljoin
+            seg = urljoin(final_url, seg)
+
+        req2 = urllib.request.Request(
+            seg, headers={"User-Agent": UA, "Range": "bytes=0-131071"})
+        with urllib.request.urlopen(req2, timeout=timeout) as r2:
+            if len(r2.read()) == 0:
+                return False, "分片为空"
+        return True, ""
+    except urllib.error.HTTPError as e:
+        return False, f"HTTP {e.code}"
+    except (socket.timeout, TimeoutError):
+        return False, "超时"
+    except Exception as e:  # noqa: BLE001
+        return False, type(e).__name__
+
+
+def probe_one(url, timeout=8, attempts=3, need=2):
+    """共识探活：连测 attempts 次，至少成功 need 次才算活。
+    这些免费流很不稳定，单次通过率抖动很大（实测同一服务器这分钟通下分钟断），
+    单次判定会让频道列表在两次构建之间来回跳。"""
+    ok_count, last_err = 0, ""
+    for _ in range(attempts):
+        ok, err = _probe_once(url, timeout)
+        if ok:
+            ok_count += 1
+            if ok_count >= need:
+                return True, ""
+        else:
+            last_err = err
+            time.sleep(0.4)
     return False, last_err
 
 
@@ -212,6 +269,7 @@ def collect_live(cfg, do_probe=True, verbose=True):
 
     inc = [re.compile(p, re.I) for p in lc.get("include", [])]
     exc = [re.compile(p, re.I) for p in lc.get("exclude", [])]
+    exc_groups = {str(g).strip().lower() for g in lc.get("exclude_groups", [])}
     name_map = {clean_name(k): v for k, v in (lc.get("name_map") or {}).items()}
     max_lines = int(lc.get("max_lines_per_channel", 3))
 
@@ -235,6 +293,8 @@ def collect_live(cfg, do_probe=True, verbose=True):
             # 优先用映射表里的中文名，没有就用清洗后的原名
             name = name_map.get(base, base)
             if not trust:
+                if it.get("group", "").strip().lower() in exc_groups:
+                    continue
                 if inc and not any(p.search(name) or p.search(raw) for p in inc):
                     continue
                 if any(p.search(raw) or p.search(name) for p in exc):

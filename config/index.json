@@ -1,6 +1,6 @@
 {
   "name": "我的 TVBox 源",
-  "version": "1.0.14",
+  "version": "1.0.17",
   "wallpaper": "",
   "spider": "",
   "sites": [],
@@ -119,11 +119,25 @@
       "group": "卫视",
       "channels": [
         {
+          "name": "内蒙古卫视",
+          "urls": [
+            "https://cdn4.skygo.mn/live/disk1/NeigMGL/HLSv3-FTA/NeigMGL.m3u8"
+          ],
+          "logo": "https://i.imgur.com/WeugJBE.png"
+        },
+        {
           "name": "安徽卫视",
           "urls": [
             "https://restream.pdtvhd.com/memfs/c1cd2ed0-3b2b-4c25-af98-a7fb0b1eb130.m3u8"
           ],
           "logo": "https://i.imgur.com/gDn101f.png"
+        },
+        {
+          "name": "康巴卫视",
+          "urls": [
+            "http://110.185.237.164:8888/hls/30/index.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/kangbatv.jpg"
         },
         {
           "name": "河北卫视",
@@ -145,6 +159,221 @@
             "https://pili-live-hls-zdzz-tv.zzxwcm.cn/zdzz-tv/nqzh.m3u8"
           ],
           "logo": "https://i.imgur.com/V0v3ST5.png"
+        },
+        {
+          "name": "西藏卫视藏语",
+          "urls": [
+            "https://live.vtibet.cn/live/ZYWS20261016.stream.m3u8"
+          ],
+          "logo": "https://i.imgur.com/NtvfnVV.png"
+        }
+      ]
+    },
+    {
+      "group": "其他",
+      "channels": [
+        {
+          "name": "QTV-2",
+          "urls": [
+            "http://video10.qtv.com.cn/drm/qtv2at/manifest.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/qdtv2.jpg"
+        },
+        {
+          "name": "QTV-5",
+          "urls": [
+            "http://video10.qtv.com.cn/drm/qtv5at/manifest.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/qdtv5.jpg"
+        },
+        {
+          "name": "Siping TV",
+          "urls": [
+            "http://stream2.jlntv.cn/sptv/sd/live.m3u8?_upt=f27750421743154598"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/sptv1.jpg"
+        },
+        {
+          "name": "Xinjiang TV 2",
+          "urls": [
+            "http://110.153.180.106:55555/out_3/index.m3u8"
+          ],
+          "logo": "https://i.imgur.com/GXFLqxx.png"
+        },
+        {
+          "name": "Xinjiang TV 3",
+          "urls": [
+            "http://110.153.180.106:55555/out_2/index.m3u8"
+          ],
+          "logo": "https://i.imgur.com/l8S5qQB.png"
+        },
+        {
+          "name": "Xinjiang TV 8",
+          "urls": [
+            "http://120.70.60.179:9901/tsfile/live/1002_1.m3u8?authid=0&key=txiptv&playlive=1"
+          ],
+          "logo": "https://i.imgur.com/JJw1Ndc.png"
+        },
+        {
+          "name": "东莞综合新闻频道",
+          "urls": [
+            "http://stream.sun0769.com/dgrtv1/mp4tv1_1500.flv"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/dgtv1.jpg"
+        },
+        {
+          "name": "兰州文旅频道",
+          "urls": [
+            "https://liveplus.lzr.com.cn/wlpd/HD/live.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/lanzhou.jpg"
+        },
+        {
+          "name": "兰州新闻综合频道",
+          "urls": [
+            "https://liveplus.lzr.com.cn/xwzh/HD/live.m3u8"
+          ],
+          "logo": "https://p3-pc.douyinpic.com/img/aweme-avatar/tos-cn-avt-0015_c2a13a952c0111b21f081d672798c8ed~c5_300x300.jpeg?from=2956013662"
+        },
+        {
+          "name": "哈尔滨新闻综合频道",
+          "urls": [
+            "https://stream.hrbtv.net/xwzh/playlist.m3u8?_upt=ef41dd531755913594"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/haerbin.jpg"
+        },
+        {
+          "name": "哈尔滨电影频道",
+          "urls": [
+            "https://stream.hrbtv.net/yspd/playlist.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/haerbin.jpg"
+        },
+        {
+          "name": "央视兵器科技",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/gfjs.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/QlF96eS.png"
+        },
+        {
+          "name": "央视台球",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/ystq.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/WK3keM9.png"
+        },
+        {
+          "name": "央视女性时尚",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/nxss.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/FVbP0aP.png"
+        },
+        {
+          "name": "央视高尔夫网球",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/gefwq.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/iqJJTmH.png"
+        },
+        {
+          "name": "宜昌三峡旅游生活",
+          "urls": [
+            "https://liveplay.ycrmt.cn/sxgd/lysh.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/ycsxlysh.jpg"
+        },
+        {
+          "name": "宜昌三峡综合频道",
+          "urls": [
+            "https://liveplay.ycrmt.cn/sxgd/zhpd.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/ycsxggpd.jpg"
+        },
+        {
+          "name": "广州台",
+          "urls": [
+            "https://tencentplaybusiness.gztv.com/live/zonghes.m3u8"
+          ],
+          "logo": "https://i.imgur.com/ff3KQXp.png"
+        },
+        {
+          "name": "广西综艺旅游频道",
+          "urls": [
+            "http://111.59.24.227:8181/tsfile/live/1001_1.m3u8?authid=0&key=txiptv&playlive=1"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/gxzypd.jpg"
+        },
+        {
+          "name": "怀旧剧场",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/hjjc.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/TVs9PBc.png"
+        },
+        {
+          "name": "浙江国际频道",
+          "urls": [
+            "https://ali-m-l.cztv.com/channels/lantian/channel10/1080p.m3u8"
+          ],
+          "logo": "https://i.imgur.com/XOL1Hph.png"
+        },
+        {
+          "name": "湖南经视频道",
+          "urls": [
+            "https://p8.vzan.com/slowlive/415983998730568937/live.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/hnjs.jpg"
+        },
+        {
+          "name": "潮州公共频道",
+          "urls": [
+            "http://113.64.146.48:1688/hls/4/index.m3u8"
+          ],
+          "logo": "https://i.imgur.com/8YIrgB7.png"
+        },
+        {
+          "name": "第一剧场",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/dyjc.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/eFxD3hq.png"
+        },
+        {
+          "name": "荆门综合新闻频道",
+          "urls": [
+            "https://stream.jmtv.com.cn/xwzh/sd/live.m3u8?_upt=341f4b8e1791883036"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/jmsxwpd.jpg"
+        },
+        {
+          "name": "赤峰综合新闻频道",
+          "urls": [
+            "http://play1-qk.nmtv.cn/live/1735546697341033.m3u8"
+          ],
+          "logo": "https://www.tvchinese.net/uploads/tv/cfxwzhpd.jpg"
+        },
+        {
+          "name": "风云剧场",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/fyjc.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/rEttkKm.png"
+        },
+        {
+          "name": "风云足球",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/fyzq.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/Fy6HkX0.png"
+        },
+        {
+          "name": "风云音乐",
+          "urls": [
+            "http://38.75.136.137:98/gslb/dsdqpub/fyyy.m3u8?auth=testpub"
+          ],
+          "logo": "https://i.imgur.com/IiiRmrf.png"
         }
       ]
     }

@@ -1,13 +1,509 @@
 {
-  "generated_at": "2026-11-07T13:50:50+08:00",
+  "generated_at": "2026-11-07T14:24:30+08:00",
   "probed": true,
   "summary": {
-    "channels_total": 42,
-    "channels_alive": 19,
-    "lines_total": 44,
-    "lines_alive": 19
+    "channels_total": 121,
+    "channels_alive": 51,
+    "lines_total": 123,
+    "lines_alive": 51
   },
   "channels": [
+    {
+      "name": "Anshun Comprehensive News Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "超时"
+      ]
+    },
+    {
+      "name": "BRTV Kaku Childrens Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CHC Action",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CHC Home Theater",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CND Film Discovery Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "CND Film Middle School Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "Chuzhou News Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Chuzhou Public Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Chuzhou Science & Education Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Documentary Humanities Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Dunhuang TV",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Fujian Comprehensive Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "UnicodeEncodeError"
+      ]
+    },
+    {
+      "name": "Golden Eagle Cartoon",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Hezheng TV",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Jiangsu City Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Jiangsu Educational Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Jiangsu Movie Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Jiangsu Public & News Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Jiangsu Sports & Leisure Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Jiangxi Children's Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "Jiangxi City Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "Jiangxi Economy & Life Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "Jiangxi Movie Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "Jiangxi Public & Agriculture Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "Jilin City Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 567"
+      ]
+    },
+    {
+      "name": "Jilin Lifestyle Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 567"
+      ]
+    },
+    {
+      "name": "Jilin Movie Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 567"
+      ]
+    },
+    {
+      "name": "Jilin Rural Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 567"
+      ]
+    },
+    {
+      "name": "Jiuquan TV News Comprehensive Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Nanchang News & Generalist Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 403"
+      ]
+    },
+    {
+      "name": "Nei Monggol TV 2 Mongolian Culture Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "QTV-1",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "QTV-2",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "QTV-3",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "QTV-4",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "QTV-5",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "QTV-6",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Qianjiang Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "Shandong TV",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Siping TV",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "Tonghua TV",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "HTTP 567"
+      ]
+    },
+    {
+      "name": "Xinjiang TV 2",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "Xinjiang TV 3",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "Xinjiang TV 8",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "Xuzhou Economic Life Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "You Man Cartoon Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "Zhejiang Children's Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "Zhejiang Economic Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "Zhejiang Education Technology Channel",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "Zhejiang Minsheng Leisure",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "URLError"
+      ]
+    },
+    {
+      "name": "东莞综合新闻频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
     {
       "name": "中国教育一台",
       "group": "其他",
@@ -29,6 +525,212 @@
       ]
     },
     {
+      "name": "兰州文旅频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "兰州新闻综合频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "哈尔滨新闻综合频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "哈尔滨电影频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "央视世界地理",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "央视兵器科技",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "央视卫生健康",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "央视台球",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "央视女性时尚",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "央视精品",
+      "group": "其他",
+      "status": "dead",
+      "lines_total": 1,
+      "lines_alive": 0,
+      "errors": [
+        "RemoteDisconnected"
+      ]
+    },
+    {
+      "name": "央视高尔夫网球",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "宜昌三峡旅游生活",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "宜昌三峡综合频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "广州台",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "广西综艺旅游频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "怀旧剧场",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "浙江国际频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "湖南经视频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "潮州公共频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "第一剧场",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "荆门综合新闻频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "赤峰综合新闻频道",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "风云剧场",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "风云足球",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "风云音乐",
+      "group": "其他",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
       "name": "东方卫视国际",
       "group": "卫视",
       "status": "dead",
@@ -47,6 +749,14 @@
       "errors": [
         "超时"
       ]
+    },
+    {
+      "name": "内蒙古卫视",
+      "group": "卫视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
     },
     {
       "name": "北京卫视",
@@ -115,6 +825,14 @@
       "errors": [
         "URLError"
       ]
+    },
+    {
+      "name": "康巴卫视",
+      "group": "卫视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
     },
     {
       "name": "延边卫视",
@@ -194,6 +912,14 @@
     },
     {
       "name": "西藏卫视",
+      "group": "卫视",
+      "status": "ok",
+      "lines_total": 1,
+      "lines_alive": 1,
+      "errors": []
+    },
+    {
+      "name": "西藏卫视藏语",
       "group": "卫视",
       "status": "ok",
       "lines_total": 1,
