@@ -100,15 +100,24 @@ rm -f "$LOG"
 
 if [ "$PUSHED" -eq 1 ]; then
   SLUG=$(git remote get-url origin | sed -E 's#.*github\.com[:/]([^/]+/[^/.]+)(\.git)?#\1#')
-  ok "已推送"
+  ok "已推送 GitHub"
 
-  # jsDelivr 对 @main 分支的「分支→commit」解析缓存最长 12 小时，
-  # purge 接口只清文件缓存、清不掉这个解析缓存（实测）。
-  # 所以电视端的新配置最多延迟 12 小时生效。想立刻生效，见 README「缓存」一节。
-  ok "已推送（电视端 jsDelivr 地址将在 12 小时内更新，急用见 README）"
+  # 顺手推 Gitee（配了 remote 才推，失败不影响 GitHub 这条主线）。
+  # Gitee raw 没有 jsDelivr 那种 12 小时分支缓存，电视用它的地址能立刻生效。
+  if git remote get-url gitee >/dev/null 2>&1; then
+    if git push gitee main >/dev/null 2>&1; then
+      ok "已同步 Gitee 镜像（推完立即生效）"
+    else
+      warn "Gitee 镜像没推上去（授权或仓库还没建好），不影响 GitHub"
+      warn "授权指引：./scripts/push-gitee.sh --test"
+    fi
+  fi
 
-  printf '\n电视上填这个地址：\n  %shttps://cdn.jsdelivr.net/gh/%s@main/config/index.json%s\n' \
-    "$GRN" "$SLUG" "$RST"
+  printf '\n%s推荐（Gitee，推完立即生效）：%s\n' "$DIM" "$RST"
+  printf '  %shttps://gitee.com/zlu1123/tvbox-hub/raw/main/config/index.json%s\n' "$GRN" "$RST"
+  printf '  直播源框用 …/live.txt 或 …/live.m3u\n'
+  printf '\n%s备用（jsDelivr，@main 有最长 12 小时解析缓存）：%s\n' "$DIM" "$RST"
+  printf '  https://cdn.jsdelivr.net/gh/%s@main/config/index.json\n' "$SLUG"
   printf '%s（纯直播用 …/live.json，纯影视用 …/vod.json）%s\n' "$DIM" "$RST"
 else
   die "推送失败。git 和 API 都没通，检查网络后重试"
