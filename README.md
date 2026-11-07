@@ -97,6 +97,8 @@ https://xxx.com/api.php/provide/vod/?ac=list
 
 推上去后 GitHub Actions 自动发布，1 分钟内生效。
 
+> 国内网络下 `git push` 有时会报 `LibreSSL SSL_connect: SSL_ERROR_SYSCALL`，那是 TLS 握手被重置，不是仓库问题。`refresh.sh` 检测到就会自动改用 GitHub API 推送（`scripts/push-api.py`，走 api.github.com，通常能通）。
+
 > 为什么探活不在 GitHub 服务器上跑：它在美国机房，判定「能用」的流你国内可能拉不动。实测过一次，它给 22 个台，其中 4 个（北京卫视、广东卫视、CCTV-5+、CCTV-6）在你这儿是死的。
 
 ---

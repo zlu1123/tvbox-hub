@@ -37,10 +37,26 @@ python3 -c "import yaml" 2>/dev/null || {
 }
 
 # ---------------------------------------------------------------------------
-step "1/3 构建配置"
+step "1/4 同步远端"
+
+# 上次可能用 API 推的，本地 SHA 和远端不一致，先对齐再动手。
+# 拉不动不影响后续（离线也能生成配置），只是推送时可能被拒。
+if git fetch origin main -q 2>/dev/null; then
+  if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]; then
+    git pull --rebase -q origin main 2>/dev/null && ok "已同步远端更新" \
+      || warn "同步失败，继续用本地版本"
+  else
+    ok "已是最新"
+  fi
+else
+  warn "连不上 origin，跳过同步（生成不受影响，推送时再处理）"
+fi
+
+# ---------------------------------------------------------------------------
+step "2/4 构建配置"
 python3 scripts/build.py $NO_PROBE || die "构建失败"
 
-step "2/3 配置体检"
+step "3/4 配置体检"
 python3 scripts/check.py
 CHECK=$?
 if [ "$CHECK" -ne 0 ]; then
@@ -53,7 +69,7 @@ if [ "$DRY" -eq 1 ]; then
 fi
 
 # ---------------------------------------------------------------------------
-step "3/3 提交并推送"
+step "4/4 提交并推送"
 
 if [ -z "$(git status --porcelain config/)" ]; then
   ok "配置无变化，无需推送"
@@ -66,15 +82,27 @@ git -c user.name="$(git config user.name || echo tvbox)" \
     commit -q -m "chore: 本地探活刷新 $(date '+%Y-%m-%d %H:%M')"
 
 LOG=$(mktemp)
+PUSHED=0
 if git push origin main >"$LOG" 2>&1; then
   tail -2 "$LOG"
+  PUSHED=1
+else
+  warn "git push 失败（$(grep -o 'fatal:.*' "$LOG" | head -1 | cut -c1-70)）"
+  warn "改用 GitHub API 推送…"
+  if python3 scripts/push-api.py >"$LOG" 2>&1; then
+    tail -3 "$LOG"
+    PUSHED=1
+  else
+    tail -6 "$LOG"
+  fi
+fi
+rm -f "$LOG"
+
+if [ "$PUSHED" -eq 1 ]; then
   ok "已推送，等 1 分钟 Actions 发布完成"
   CONFIG_URL=$(git remote get-url origin \
     | sed -E 's#.*github\.com[:/]([^/]+)/([^/.]+)(\.git)?#https://\1.github.io/\2/index.json#')
   printf '\n配置地址：%s%s%s\n' "$GRN" "$CONFIG_URL" "$RST"
 else
-  tail -5 "$LOG"
-  rm -f "$LOG"
-  die "推送失败。检查网络，或执行 gh auth login 重新授权"
+  die "推送失败。git 和 API 都没通，检查网络后重试"
 fi
-rm -f "$LOG"
