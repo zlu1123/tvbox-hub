@@ -79,19 +79,27 @@ ok "分支：main"
 # ---------------------------------------------------------------------------
 step "4/5 创建远程仓库并推送"
 
-if git remote get-url origin >/dev/null 2>&1; then
-  warn "origin 已存在：$(git remote get-url origin)"
-  git push -u origin main || die "推送失败"
+REMOTE_URL="https://github.com/$OWNER/$REPO_NAME.git"
+
+# 先确保远程仓库存在（已经手动建过就跳过）
+if gh repo view "$OWNER/$REPO_NAME" >/dev/null 2>&1; then
+  ok "远程仓库已存在：$OWNER/$REPO_NAME"
 else
-  if gh repo view "$OWNER/$REPO_NAME" >/dev/null 2>&1; then
-    warn "远程仓库 $OWNER/$REPO_NAME 已存在，直接关联推送"
-    git remote add origin "https://github.com/$OWNER/$REPO_NAME.git"
-    git push -u origin main || die "推送失败"
-  else
-    gh repo create "$REPO_NAME" --public --source=. --remote=origin --push \
-      --description "自建 TVBox 源，每日自动探活刷新" || die "创建仓库失败"
-  fi
+  say "创建仓库 $OWNER/$REPO_NAME …"
+  gh repo create "$REPO_NAME" --public \
+    --description "自建 TVBox 源，每日自动探活刷新" >/dev/null || die "创建仓库失败"
+  ok "已创建"
 fi
+
+# origin 统一指向这个仓库（已配过就改，不重复 add）
+if git remote get-url origin >/dev/null 2>&1; then
+  git remote set-url origin "$REMOTE_URL"
+else
+  git remote add origin "$REMOTE_URL"
+fi
+ok "origin → $REMOTE_URL"
+
+git push -u origin main || die "推送失败。若是 non-fast-forward，执行：git pull --rebase origin main"
 ok "已推送：https://github.com/$OWNER/$REPO_NAME"
 
 # ---------------------------------------------------------------------------

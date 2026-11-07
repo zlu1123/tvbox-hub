@@ -188,7 +188,7 @@ cmd_launch() {
   ok "已在电视上启动：$pkg"
   say ""
   say "${DIM}接下来在电视上操作：${RST}"
-  say "  设置 → 配置地址 → 填入你的源地址（形如 https://<用户名>.github.io/tvbox-hub/index.json）"
+  say "  设置 → 配置地址 → 填入你的源地址（形如 https://zlu1123.github.io/tvbox-hub/index.json）"
 }
 
 # ---------------------------------------------------------------------------

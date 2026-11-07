@@ -3,7 +3,7 @@
 自建的 TVBox 源仓库，托管在 GitHub Pages 上。每天自动抓取、探活、剔除死链，电视端只填一个固定地址，长期不用管。
 
 ```
-电视端配置地址 → https://<用户名>.github.io/tvbox-hub/index.json
+电视端配置地址 → https://zlu1123.github.io/tvbox-hub/index.json
 ```
 
 **先说清楚一件事**：GitHub 上托管的是「配置」，不是「片子」。这个仓库里只有台名、频道地址、站点接口地址，加起来几百 KB。视频流本身不可能放 GitHub（单文件 100MB 上限，也违反其服务条款）。
@@ -85,7 +85,7 @@ python3 scripts/check.py      # 有 ✗ 就先别往下走
 ```
 ────────────────────────────────────────────
 配置地址（填到电视上）：
-  https://<用户名>.github.io/tvbox-hub/index.json
+  https://zlu1123.github.io/tvbox-hub/index.json
 ────────────────────────────────────────────
 ```
 
@@ -95,7 +95,7 @@ python3 scripts/check.py      # 有 ✗ 就先别往下走
 先在 GitHub 网页上建一个空仓库（**不要**勾 README / gitignore），然后：
 
 ```bash
-git remote add origin git@github.com:<用户名>/tvbox-hub.git
+git remote add origin git@github.com:zlu1123/tvbox-hub.git
 git push -u origin main
 ```
 
@@ -112,7 +112,7 @@ git push -u origin main
 访问下面地址能返回一坨 JSON 就成功了：
 
 ```
-https://<用户名>.github.io/tvbox-hub/index.json
+https://zlu1123.github.io/tvbox-hub/index.json
 ```
 
 ### 4. 装上电视
@@ -127,7 +127,7 @@ https://<用户名>.github.io/tvbox-hub/index.json
 
 ### 5. 电视上填地址
 
-TVBox → 设置 → 配置地址 → 填 `https://<用户名>.github.io/tvbox-hub/index.json` → 确定 → 重启 App。
+TVBox → 设置 → 配置地址 → 填 `https://zlu1123.github.io/tvbox-hub/index.json` → 确定 → 重启 App。
 
 首页出现「直播」入口就成功了。
 
