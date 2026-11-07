@@ -18,6 +18,7 @@ set -uo pipefail
 
 cd "$(dirname "$0")/.." || exit 1
 APK_DIR="apk"
+PKG_CACHE=".tvbox_pkg"   # 记录上次装进去的包名，避免误启动系统同名应用
 REPO_API="https://api.github.com/repos/j4Uq/TVBoxOSC/releases/latest"
 RED=$'\033[31m'; GRN=$'\033[32m'; YEL=$'\033[33m'; DIM=$'\033[2m'; RST=$'\033[0m'
 
@@ -133,6 +134,10 @@ cmd_install() {
   abi=$(adb -s "$dev" shell getprop ro.product.cpu.abi | tr -d '\r')
   say "设备 ABI: $abi"
 
+  # 装之前先记一份第三方包列表，装完比对出是哪个包
+  local before after
+  before=$(adb -s "$dev" shell pm list packages -3 2>/dev/null | tr -d '\r')
+
   say "安装 $(basename "$apk") …"
   if adb -s "$dev" install -r -g "$apk" 2>&1 | tee /tmp/.tvbox_install.$$ | grep -q Success; then
     ok "安装成功"
@@ -151,20 +156,39 @@ cmd_install() {
   fi
   rm -f /tmp/.tvbox_install.$$
 
+  after=$(adb -s "$dev" shell pm list packages -3 2>/dev/null | tr -d '\r')
+  local newpkg
+  newpkg=$(comm -13 <(printf '%s\n' "$before" | sort) <(printf '%s\n' "$after" | sort) \
+           | head -1 | sed 's/package://')
+  if [ -n "$newpkg" ]; then
+    echo "$newpkg" > "$PKG_CACHE"
+    ok "新装的包名：$newpkg"
+  else
+    warn "没检测到新增包（可能是覆盖安装），沿用上次记录"
+  fi
+
   cmd_launch "$dev"
 }
 
 cmd_launch() {
   local dev; dev=$(connect_dev "$1") || exit 1
   local pkg
-  pkg=$(adb -s "$dev" shell pm list packages 2>/dev/null | tr -d '\r' \
-        | grep -iE 'tvbox|com.fongmi|影视' | head -1 | sed 's/package://')
+  # 优先用装机时记录下来的包名，退而求其次按关键词找第三方应用
+  if [ -f "$PKG_CACHE" ]; then
+    pkg=$(cat "$PKG_CACHE")
+  else
+    pkg=$(adb -s "$dev" shell pm list packages -3 2>/dev/null | tr -d '\r' \
+          | sed 's/package://' \
+          | grep -iE 'tvbox|fongmi|\.osc' \
+          | grep -viE 'duokan|airkan|xiaomi' | head -1)
+  fi
   [ -n "$pkg" ] || die "没找到已安装的 TVBox，先执行 install"
+
   adb -s "$dev" shell monkey -p "$pkg" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
   ok "已在电视上启动：$pkg"
   say ""
   say "${DIM}接下来在电视上操作：${RST}"
-  say "  设置 → 配置地址 → 填入你的源地址（形如 https://<用户名>.github.io/tvbox-hub/config/index.json）"
+  say "  设置 → 配置地址 → 填入你的源地址（形如 https://<用户名>.github.io/tvbox-hub/index.json）"
 }
 
 # ---------------------------------------------------------------------------

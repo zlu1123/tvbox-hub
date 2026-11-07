@@ -3,7 +3,7 @@
 自建的 TVBox 源仓库。每天自动抓取、探活、剔除死链、发布到 GitHub Pages，电视端只填一个固定地址，长期不用管。
 
 ```
-电视端配置地址 → https://<用户名>.github.io/tvbox-hub/config/index.json
+电视端配置地址 → https://<用户名>.github.io/tvbox-hub/index.json
 ```
 
 点播内容来自你自己的 NAS（Emby / Jellyfin），不走第三方聚合站；直播来自公开 M3U 清单 + 你自己维护的源。
@@ -99,6 +99,16 @@ git push -u origin main
 
 细化步骤和报错处理见 [docs/install.md](docs/install.md)。
 
+### 6. 想先本地验一遍（还没推 GitHub 时）
+
+电脑和电视在同一 WiFi，在仓库根目录起个静态服务：
+
+```bash
+python3 -m http.server 8000
+```
+
+电视上配置地址填 `http://<电脑内网IP>:8000/config/index.json`，能正常出画面再推 GitHub。
+
 ---
 
 ## 日常维护
@@ -140,6 +150,21 @@ name_map:
 - CCTV 系 15 个台基本稳定，卫视波动大
 
 这就是为什么要有每日探活——**单次成功率不重要，长期有 19 个能看的才重要**。如果嫌卫视太少，最实际的办法是接自己运营商的 IPTV 清单（`trust: true`）。
+
+---
+
+## 已验证环境
+
+| 项目 | 实测结果 |
+|---|---|
+| 电视 | 小米电视4（MiTV4-ANSM0），Android 6.0.1，armeabi-v7a |
+| APK | `TVBox_q215613905_20260914-1520-java.apk`（32 MB，通用包） |
+| 安装 | `adb install -r -g` 一次通过，无 USER_RESTRICTED |
+| 包名 | `com.github.tvbox.osc.jun` |
+| 运行 | HomeActivity 正常前台，未崩溃 |
+
+> 小米电视上有个坑：系统自带 `com.duokan.airkan.tvbox`（投屏应用），名字里带 tvbox。
+> 启动脚本靠装机前后比对包列表来定位真实包名，不会误启动它。
 
 ---
 
