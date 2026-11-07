@@ -62,7 +62,11 @@ fi
 # 指定 -i 后返回 "Hi zlu1123! You've successfully authenticated"）。
 # 所以这里显式指定密钥，不改用户的全局配置。
 KEY="${GITEE_SSH_KEY:-$HOME/.ssh/id_ed25519}"
-SSH_CMD="ssh -i ${KEY} -o IdentitiesOnly=yes"
+# 必须禁掉交互提示：Gitee 换了接入 IP / known_hosts 里没有对应条目时，
+# OpenSSH 会打印 "Are you sure you want to continue connecting (yes/no)?"，
+# 在 refresh.sh 这种无人值守的后台调用里会直接把流程挂死（实测踩过）。
+# BatchMode=yes 保证任何情况下都不会等 stdin。
+SSH_CMD="ssh -i ${KEY} -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o BatchMode=yes -o ConnectTimeout=15"
 
 if [ "${1:-}" = "--test" ]; then
   echo "测试 Gitee SSH 认证（密钥 ${KEY}）…"
