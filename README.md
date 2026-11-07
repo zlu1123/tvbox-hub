@@ -1,14 +1,16 @@
 # tvbox-hub
 
-两个源，各管一件事。**电视上请用 jsDelivr 地址**（下面表格第一行），原因见文末。
+两个源，各管一件事。**电视上请用 jsDelivr 地址**（下面表格），原因见文末。
 
-| 用途 | 电视填这个地址 | 填在哪 |
+| 填在哪 | 用哪个地址 | 说明 |
 |---|---|---|
-| 直播 | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.json` | 「直播源」 |
-| 影视 | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/vod.json` | 「接口」 |
-| 两个都要 | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/index.json` | 只有一个配置框时填这个 |
+| **直播源**（提示「支持 txt、m3u」的框） | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.txt` | 首选，52 个台 |
+| 同上，m3u 格式 | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/live.m3u` | 二选一 |
+| **接口 / 配置地址**（要 JSON 的框） | `https://cdn.jsdelivr.net/gh/zlu1123/tvbox-hub@main/config/index.json` | 直播+影视合一 |
 
-直播源已经在跑，19 个台（CCTV 系 + 卫视）实测可播。影视源现在是空的，需要你填一个接口地址 —— 见 [影视源](#影视源搜电影剧集)。
+> ⚠️ 别把 `index.json` 填进「直播源」框——那个框只认 txt / m3u，填 JSON 会提示「支持 txt、支持 m3u」并加载失败。反过来，`live.txt` 也别填进「接口」框。
+
+直播源已经在跑，52 个台（CCTV 系 15 个 + 卫视 7 个 + 地方台）实测端到端可播。影视源现在是空的，需要你填一个接口地址 —— 见 [影视源](#影视源搜电影剧集)。
 
 > 原始地址 `https://zlu1123.github.io/tvbox-hub/index.json` 也能用，但**只在 Android 7.1 以上的设备**。你这台小米电视是 Android 6.0.1，认不出 github.io 现在用的证书，会直接报「加载失败」。
 
