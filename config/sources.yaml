@@ -104,29 +104,37 @@ live:
 
 # ------------------------------------------------------------
 # 点播站点
+#
+# 没有 NAS 的话这里留空 —— 仓库就当作纯直播源用，电视上不会出现
+# 打不开的站点。以后有了自有媒体库或自建接口，再往下加条目。
 # ------------------------------------------------------------
 vod:
-  sites:
-    # ===== 自建 NAS 影库（由 nas/emby2cms.py 提供苹果CMS v10 接口）=====
-    # 地址里的 192.168.1.10 换成你 NAS 的实际内网 IP，端口换成你映射的端口
-    - key: "nas_lib"
-      name: "我的影库"
-      type: 4
-      api: "http://192.168.1.10:8000/api.php/provide/vod/"
-      searchable: 1
-      quickSearch: 1
-      filterable: 1
-      ext: ""
+  sites: []
 
-    # ===== 下面是留给你自己加站点的位置（示例已注释）=====
-    # 苹果CMS v10 类型的站点：
-    # - key: "example_cms"
-    #   name: "示例站"
-    #   type: 4
-    #   api: "https://example.com/api.php/provide/vod/"
-    #   searchable: 1
-    #   quickSearch: 0
-    #   filterable: 1
+  # ===== 以后要加站点，照下面的格式写（注意缩进，取消注释即可）=====
+  #
+  # ● 方案 A：自己有 NAS / 常开电脑，跑了 Emby 或 Jellyfin
+  #   用本仓库的 nas/emby2cms.py 把它包成苹果CMS接口：
+  #
+  # - key: "my_emby"
+  #   name: "我的影库"
+  #   type: 4
+  #   api: "http://192.168.1.10:8000/api.php/provide/vod/"
+  #   searchable: 1
+  #   quickSearch: 1
+  #   filterable: 1
+  #   ext: ""
+  #
+  # ● 方案 B：任何苹果CMS v10 的接口（你自己的站、或你信任的片源站）
+  #
+  # - key: "my_cms"
+  #   name: "我的片源"
+  #   type: 4
+  #   api: "https://example.com/api.php/provide/vod/"
+  #   searchable: 1
+  #   quickSearch: 0
+  #   filterable: 1
+  #   ext: ""
 
 # ------------------------------------------------------------
 # 播放器高级项（一般不用动）

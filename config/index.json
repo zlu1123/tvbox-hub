@@ -1,20 +1,9 @@
 {
   "name": "我的 TVBox 源",
-  "version": "1.0.8",
+  "version": "1.0.10",
   "wallpaper": "",
   "spider": "",
-  "sites": [
-    {
-      "key": "nas_lib",
-      "name": "我的影库",
-      "type": 4,
-      "api": "http://192.168.1.10:8000/api.php/provide/vod/",
-      "searchable": 1,
-      "quickSearch": 1,
-      "filterable": 1,
-      "ext": ""
-    }
-  ],
+  "sites": [],
   "lives": [
     {
       "group": "央视",

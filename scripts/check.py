@@ -86,6 +86,8 @@ def check_structure(idx):
             warn(f"{tag} type=0 需要顶层 spider 字段，当前为空")
     if idx["sites"]:
         ok(f"{len(idx['sites'])} 个站点字段完整")
+    else:
+        ok("未配置点播站点，按纯直播模式运行（正常状态）")
 
     lives = idx.get("lives") or []
     total_ch = 0
@@ -105,10 +107,12 @@ def check_structure(idx):
 
 def check_sites(idx):
     print("\n[2/3] 站点连通性")
+    sites = [s for s in idx.get("sites", []) if s.get("type") == 4]
+    if not sites:
+        ok("无点播站点需要检测（纯直播模式）")
+        return
     reachable = 0
-    for s in idx.get("sites", []):
-        if s.get("type") != 4:
-            continue
+    for s in sites:
         api = s.get("api", "")
         host = urlparse(api).hostname or ""
         if is_private(host):
