@@ -250,10 +250,10 @@ vod:
       type: 1
       api: "https://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/"
       searchable: 1
-      quickSearch: 0          # 偶发超时，不放进全局快捷搜索拖慢聚合
+      quickSearch: 1          # 新剧收录较全（实测有《早春晴朗》），参与聚合搜索提高命中
       filterable: 1
       ext: ""
-      _note: "约 9.2 万条，Cloudflare 解析正常"
+      _note: "约 9.2 万条，Cloudflare 解析正常，响应约 2s"
 
     - key: "subo"
       name: "速播资源"

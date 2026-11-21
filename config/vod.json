@@ -39,7 +39,7 @@
       "type": 1,
       "api": "https://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/",
       "searchable": 1,
-      "quickSearch": 0,
+      "quickSearch": 1,
       "filterable": 1,
       "ext": ""
     },
