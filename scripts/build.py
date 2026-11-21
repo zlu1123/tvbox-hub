@@ -742,6 +742,16 @@ def main():
     with open(idx_path, "w", encoding="utf-8") as f:
         json.dump(index, f, ensure_ascii=False, indent=2)
 
+    # index-phone.json —— 手机版影视仓专用。
+    # 两个版本对 spider 的要求正好相反：
+    #   电视版 6.1.6：顶层必须有 "spider": ""，否则会 fallback 加载内置 jar，
+    #                 弹「jar加载失败 请更换接口」并卡住启动；
+    #   手机版      ：遇到空串会当作一个待下载的 jar 地址，直接报错。
+    # 所以同一份内容出两个文件，只差这一个键，各填各的。
+    phone = {k: v for k, v in index.items() if k != "spider"}
+    with open(os.path.join(OUT_DIR, "index-phone.json"), "w", encoding="utf-8") as f:
+        json.dump(phone, f, ensure_ascii=False, indent=2)
+
     # live.json —— 纯直播源，单独填「直播源 / EPG 地址」用。
     # lives 直接沿用 index 里已经转好的 {name, url} 形式，别再塞内部结构。
     live_only = dict(index, name=index["name"] + " - 直播", sites=[])
@@ -780,7 +790,8 @@ def main():
         n_sites = len(index["sites"])
         n_live = sum(len(g["channels"]) for g in lives)
         print(color(f"✔ 完成：{n_sites} 个影视站 / {n_live} 个直播频道", "g"))
-        print("  → config/index.json   （接口框：直播+影视）")
+        print("  → config/index.json   （电视：直播+影视，带 spider 空串）")
+        print("  → config/index-phone.json（手机影视仓：同一份内容，去掉 spider）")
         print("  → config/live.txt     （直播源框：txt 格式）")
         print("  → config/live.m3u     （直播源框：m3u 格式）")
         print("  → config/vod.json     （接口框：纯影视）")

@@ -185,6 +185,23 @@ def check_health():
 def check_artifacts(idx):
     print("\n[4/4] 产物一致性")
     ver = idx.get("version")
+
+    # 手机版配置必须与主配置只差一个 spider 键
+    ppath = os.path.join(CONFIG, "index-phone.json")
+    if os.path.exists(ppath):
+        with open(ppath, encoding="utf-8") as f:
+            p = json.load(f)
+        if p.get("version") != ver:
+            err(f"index-phone.json 版本 {p.get('version')} 与 index.json 的 {ver} 不一致")
+        if p.get("sites") != idx.get("sites") or p.get("lives") != idx.get("lives"):
+            err("index-phone.json 的站点/直播与主配置不一致")
+        if "spider" in p:
+            err("index-phone.json 不该带 spider（手机版遇到空串会报错）")
+        if "spider" not in idx:
+            err("index.json 缺少 spider 空串（电视版会去加载内置 jar 并报错）")
+    else:
+        err("缺少 index-phone.json（手机版影视仓专用）")
+
     # 频道数以 live.txt 为准（index.json 里只放了一个 m3u 入口）
     txt = os.path.join(CONFIG, "live.txt")
     m3u = os.path.join(CONFIG, "live.m3u")
