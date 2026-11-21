@@ -650,9 +650,13 @@ def build_index(cfg, lives, version, sites=None):
        模型里只有 name / url / epg / logo / ua / timeZone，没有 group /
        channels。把内部数据结构直接写进去，App 拿到的 url 是 null，配置
        加载回调永远不返回，界面就停在 loading 转圈。
-    2. 顶层 spider / doh / ijk / wallpaper 全部不写。spider 为空串时部分
-       影视仓版本会拿空地址去下载；doh 里塞 Google 会在国内把域名解析拖死。
-       只保留各家都认的最小字段集，兼容性最好。
+    2. 顶层只保留最小字段集：doh 里塞 Google 会在国内把域名解析拖死，
+       ijk / wallpaper 可有可无，一律不写。
+       但 **spider 必须显式写成空字符串**，不能省略。影视仓 6.1.6
+       (com.huawei.himovceie) 在顶层完全没有 spider 这个键时，会 fallback
+       去加载它内置/缓存的一份 jar，加载失败就弹「jar加载失败 请更换接口」，
+       并且启动流程卡住。v1.0.35 删掉该字段后每次启动都报，v1.0.32 带
+       "spider": "" 时不报，实测对比过。空字符串会让 App 直接跳过加载。
     """
     player = cfg.get("player", {})
     live_url = str((cfg.get("publish") or {}).get("live_m3u") or "").strip()
@@ -668,6 +672,7 @@ def build_index(cfg, lives, version, sites=None):
     return {
         "name": cfg.get("meta", {}).get("name", "TVBox 源"),
         "version": version,
+        "spider": "",  # 必须有这个键，详见上方说明；删掉影视仓会去加载默认 jar
         "sites": clean(sites),
         "lives": [{"name": "直播", "url": live_url}] if live_url else [],
         "parses": player.get("parses", []),
