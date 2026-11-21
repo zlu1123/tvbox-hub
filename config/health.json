@@ -1,21 +1,20 @@
 {
-  "generated_at": "2026-11-07T18:01:00+08:00",
+  "generated_at": "2026-11-21T17:37:06+08:00",
   "probed": true,
   "summary": {
     "channels_total": 79,
-    "channels_alive": 38,
+    "channels_alive": 37,
     "lines_total": 159,
-    "lines_alive": 44
+    "lines_alive": 42
   },
   "channels": [
     {
       "name": "CETV-3",
       "group": "其他",
-      "status": "dead",
+      "status": "partial",
       "lines_total": 2,
-      "lines_alive": 0,
+      "lines_alive": 1,
       "errors": [
-        "HTTP 404",
         "RemoteDisconnected"
       ]
     },
@@ -67,7 +66,8 @@
       "lines_alive": 1,
       "errors": [
         "HTTP 403",
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -132,12 +132,10 @@
     {
       "name": "广州台",
       "group": "其他",
-      "status": "dead",
+      "status": "ok",
       "lines_total": 1,
-      "lines_alive": 0,
-      "errors": [
-        "HTTP 403"
-      ]
+      "lines_alive": 1,
+      "errors": []
     },
     {
       "name": "广西综艺旅游频道",
@@ -204,7 +202,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -242,7 +241,7 @@
       "lines_total": 3,
       "lines_alive": 1,
       "errors": [
-        "RemoteDisconnected",
+        "假台(与其他台同源)",
         "超时"
       ]
     },
@@ -263,7 +262,7 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
+        "假台(与其他台同源)",
         "非有效 m3u8"
       ]
     },
@@ -274,8 +273,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
-        "URLError"
+        "URLError",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -327,7 +326,8 @@
       "lines_total": 3,
       "lines_alive": 1,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -347,8 +347,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
-        "URLError"
+        "URLError",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -358,7 +358,7 @@
       "lines_total": 2,
       "lines_alive": 1,
       "errors": [
-        "RemoteDisconnected"
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -418,7 +418,8 @@
       "lines_total": 3,
       "lines_alive": 1,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -448,8 +449,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
-        "URLError"
+        "URLError",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -461,7 +462,7 @@
       "errors": [
         "HTTP 403",
         "HTTP 404",
-        "RemoteDisconnected"
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -471,7 +472,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -489,8 +491,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected",
-        "URLError"
+        "URLError",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -563,8 +565,9 @@
       "lines_total": 3,
       "lines_alive": 0,
       "errors": [
-        "HTTP 404",
-        "RemoteDisconnected"
+        "HTTP 500",
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -585,7 +588,8 @@
       "lines_total": 3,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {
@@ -603,9 +607,10 @@
       "group": "央视",
       "status": "partial",
       "lines_total": 3,
-      "lines_alive": 2,
+      "lines_alive": 1,
       "errors": [
-        "HTTP 403"
+        "HTTP 403",
+        "RemoteDisconnected"
       ]
     },
     {
@@ -656,7 +661,6 @@
       "lines_alive": 0,
       "errors": [
         "HTTP 403",
-        "RemoteDisconnected",
         "假台(与其他台同源)"
       ]
     },
@@ -684,30 +688,34 @@
     {
       "name": "CCTV-8",
       "group": "央视",
-      "status": "partial",
+      "status": "dead",
       "lines_total": 2,
-      "lines_alive": 1,
+      "lines_alive": 0,
       "errors": [
-        "HTTP 403"
+        "HTTP 403",
+        "RemoteDisconnected"
       ]
     },
     {
       "name": "CCTV-8K 超高清",
       "group": "央视",
-      "status": "ok",
+      "status": "dead",
       "lines_total": 1,
-      "lines_alive": 1,
-      "errors": []
+      "lines_alive": 0,
+      "errors": [
+        "广告跳转"
+      ]
     },
     {
       "name": "CCTV-9",
       "group": "央视",
-      "status": "partial",
+      "status": "dead",
       "lines_total": 3,
-      "lines_alive": 1,
+      "lines_alive": 0,
       "errors": [
         "HTTP 403",
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "广告跳转"
       ]
     },
     {
@@ -749,7 +757,8 @@
       "lines_total": 2,
       "lines_alive": 0,
       "errors": [
-        "RemoteDisconnected"
+        "RemoteDisconnected",
+        "假台(与其他台同源)"
       ]
     },
     {

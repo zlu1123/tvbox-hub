@@ -214,25 +214,16 @@ live:
 # ------------------------------------------------------------
 vod:
   sites:
+    # ===== 能搜索的主力源 =====
     - key: "ffzy"
       name: "非凡资源"
       type: 1
-      api: "https://cj.ffzyapi.com/api.php/provide/vod/from/ffm3u8/"
+      api: "https://api.ffzyapi.com/api.php/provide/vod/from/ffm3u8/"
       searchable: 1
       quickSearch: 1
       filterable: 1
       ext: ""
-      _note: "接口与播放域名都走 https，约 9.9 万条，响应 0.4s"
-
-    - key: "dytt"
-      name: "电影天堂"
-      type: 1
-      api: "https://caiji.dyttzyapi.com/api.php/provide/vod/from/dyttm3u8/"
-      searchable: 1
-      quickSearch: 1
-      filterable: 1
-      ext: ""
-      _note: "接口与播放域名都走 https，约 8.5 万条，响应 0.4s"
+      _note: "改用 api.ffzyapi.com。原 cj.ffzyapi.com 在电视侧被 DNS 污染，解析到 Dropbox/Facebook 的 IP"
 
     - key: "360zy"
       name: "360资源"
@@ -242,46 +233,82 @@ vod:
       quickSearch: 1
       filterable: 1
       ext: ""
-      _note: "播放域名是 Certum 链；接口是 Let's Encrypt，靠 App 自带 SSL 工厂"
+      _note: "电视上唯一一直能出资源的源，保留"
 
-    - key: "lziapi"
-      name: "量子资源"
+    - key: "iqiyi"
+      name: "爱奇艺资源"
       type: 1
-      api: "https://cj.lziapi.com/api.php/provide/vod/from/lzm3u8/"
+      api: "https://iqiyizyapi.com/api.php/provide/vod/from/iqym3u8/"
       searchable: 1
       quickSearch: 1
       filterable: 1
       ext: ""
-      _note: "片库最大之一（约 16.3 万条），响应 0.3s；接口 https 可用"
-
-    - key: "bfzy"
-      name: "暴风资源"
-      type: 1
-      api: "https://bfzyapi.com/api.php/provide/vod/from/bfzym3u8/"
-      searchable: 1
-      quickSearch: 1
-      filterable: 1
-      ext: ""
-      _note: "片库最大（约 17.1 万条），接口 https 可直连"
+      _note: "约 7.1 万条，列表 / 搜索 / 详情 m3u8 实测通过"
 
     - key: "modu"
       name: "魔都资源"
       type: 1
       api: "https://caiji.moduapi.cc/api.php/provide/vod/from/modum3u8/"
       searchable: 1
-      quickSearch: 0          # 实测 8.6s，不放进全局快捷搜索拖慢聚合
+      quickSearch: 0          # 偶发超时，不放进全局快捷搜索拖慢聚合
       filterable: 1
       ext: ""
-      _note: "响应最慢，只保留手动浏览/单独搜索"
+      _note: "约 9.2 万条，Cloudflare 解析正常"
 
-  # 影视站探活。比直播探活严格：光接口能打开不算，还要能拿详情、
-  # 能拿到 m3u8 播放地址、能搜到片子，三项全过才写进电视配置。
+    - key: "subo"
+      name: "速播资源"
+      type: 1
+      api: "https://subocj.com/api.php/provide/vod/"
+      searchable: 1
+      quickSearch: 0
+      filterable: 1
+      ext: ""
+      _note: "约 11.9 万条；搜索要 ac=videolist&wd，探活已做参数回退"
+
+    # ===== 大片库浏览源：搜索接口不给结果，只用来分类浏览找片 =====
+    - key: "maotai"
+      name: "茅台资源"
+      type: 1
+      api: "https://caiji.maotaizy.cc/api.php/provide/vod/from/mtm3u8/"
+      searchable: 0
+      quickSearch: 0
+      filterable: 1
+      ext: ""
+      _require_search: false
+      _note: "约 15.3 万条，片库最大；搜索接口返回空，只做浏览源"
+
+    - key: "niuniu"
+      name: "牛牛资源"
+      type: 1
+      api: "https://api.niuniuzy.me/api.php/provide/vod/"
+      searchable: 0
+      quickSearch: 0
+      filterable: 1
+      ext: ""
+      _require_search: false
+      _note: "约 12.6 万条，原生接口直接给 m3u8"
+
+    - key: "wujin"
+      name: "无尽资源"
+      type: 1
+      api: "https://api.wujinapi.me/api.php/provide/vod/from/wjm3u8/"
+      searchable: 0
+      quickSearch: 0
+      filterable: 1
+      ext: ""
+      _require_search: false
+      _note: "约 12.5 万条，偶发 403，只做浏览源"
+
+  # 影视站探活：光接口能打开不算，还要能拿列表、能拿到 m3u8 直链。
+  # 默认还要求能搜到片子（防止只返回首页的假接口）；但有些大片库站搜索
+  # 接口本身不给结果，却可以正常分类浏览，这类站单独标 _require_search: false
+  # 降级保留，并在配置里设 searchable/quickSearch = 0，不参与聚合搜索。
   probe:
     enabled: true
-    timeout: 12             # 单个请求超时（秒）
-    workers: 6
+    timeout: 15             # 单个请求超时（秒）；免费站抖动大，给宽一点
+    workers: 4              # 并发太高容易把采集站打回 403 / RemoteDisconnected
     keyword: "流浪地球"     # 用它验证搜索，换成你想测的片名也行
-    require_search: true    # 搜索无结果就判死（防止只返回首页的假接口）
+    require_search: true    # 默认严格；单个站点可用 _require_search: false 豁免
 
   # ===== 想加自己的接口：照抄下面这段，改 api 就行 =====
   #   _note 这种下划线开头的字段只给自己看，不会写进电视配置。

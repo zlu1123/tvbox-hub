@@ -549,10 +549,21 @@ def probe_vod_one(site, timeout=12, keyword="流浪地球", require_search=True)
             return r
 
         # 3) 搜索（用户要的就是能搜片，这步不能省）
+        #    有的站（如速播）只认 ac=videolist&wd，给一次参数回退；
+        #    两种都返回空才算真的搜不到。
         if require_search:
-            s = _cms_json(_cms_url(api, {"ac": "list", "wd": keyword}), timeout)
-            r["search_hits"] = len(s.get("list") or [])
-            if r["search_hits"] == 0:
+            hits = 0
+            for params in ({"ac": "list", "wd": keyword},
+                           {"ac": "videolist", "wd": keyword}):
+                try:
+                    s = _cms_json(_cms_url(api, params), timeout)
+                    hits = len(s.get("list") or [])
+                    if hits:
+                        break
+                except Exception:  # noqa: BLE001
+                    continue
+            r["search_hits"] = hits
+            if hits == 0:
                 r["error"] = f"搜索「{keyword}」无结果"
                 return r
 
@@ -596,7 +607,10 @@ def collect_vod(cfg, do_probe=True, verbose=True):
             with ThreadPoolExecutor(max_workers=workers) as pool:
                 futs = {
                     pool.submit(probe_vod_one, candidates[i], timeout,
-                                keyword, require_search): i
+                                keyword,
+                                # 站点可单独豁免搜索校验（大片库浏览源）
+                                bool(candidates[i].get("_require_search",
+                                                        require_search))): i
                     for i in idxs
                 }
                 for f in as_completed(futs):
